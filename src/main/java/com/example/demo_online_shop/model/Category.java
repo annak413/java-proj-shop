@@ -1,10 +1,9 @@
 // Category.java
 package com.example.demo_online_shop.model;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Objects;
-
 
 @Entity
 @Table(name = "categories")
@@ -27,6 +26,7 @@ public class Category {
     }
 
     // Геттери та сеттери
+
     public Long getId() {
         return id;
     }
@@ -61,8 +61,11 @@ public class Category {
     }
 
     public void removeProduct(Product product) {
-        if (product != null && products.remove(product)) {
-            product.setCategory(null);
+        if (product != null && products.contains(product)) {
+            product.setCategory(null); // Встановлюємо категорію в null для об'єктної моделі
+            products.remove(product);
+            // Логіку збереження продукту з новою категорією або видалення
+            // слід перенести до сервісного шару.
         }
     }
 

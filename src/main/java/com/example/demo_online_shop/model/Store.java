@@ -1,6 +1,6 @@
 // Store.java
 package com.example.demo_online_shop.model;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -35,11 +36,57 @@ public class CategoryService {
     public Product addNewProductToCategory(Long categoryId, Product product) {
         Optional<Category> categoryOptional = categoryRepo.findById(categoryId);
         if (categoryOptional.isPresent()) {
-            product.setCategory(categoryOptional.get());
-            return productRepo.save(product);
+            Category category = categoryOptional.get();
+            product.setCategory(category);
+            category.addProduct(product);
+            productRepo.save(product);
+            categoryRepo.save(category);
+            return product;
         } else {
             throw new IllegalArgumentException("Категорію з ID " + categoryId + " не знайдено.");
         }
+    }
+
+    /**
+     * Видаляє продукт з поточної категорії та одразу ж призначає його до нової категорії.
+     *
+     * @param currentCategoryId Ідентифікатор поточної категорії, з якої потрібно видалити продукт.
+     * @param productId         Ідентифікатор продукту, який потрібно перемістити.
+     * @param newCategoryId     Ідентифікатор нової категорії, до якої потрібно прив'язати продукт.
+     * @throws NoSuchElementException якщо поточну або нову категорію чи продукт не знайдено.
+     * @throws IllegalArgumentException якщо продукт не належить до поточної категорії.
+     */
+    @Transactional
+    public void removeProductFromCategoryAndAssignNew(Long currentCategoryId, Long productId, Long newCategoryId) {
+        Optional<Category> currentCategoryOptional = categoryRepo.findById(currentCategoryId);
+        Optional<Category> newCategoryOptional = categoryRepo.findById(newCategoryId);
+        Optional<Product> productOptional = productRepo.findById(productId);
+
+        if (currentCategoryOptional.isEmpty()) {
+            throw new NoSuchElementException("Поточну категорію з ID " + currentCategoryId + " не знайдено.");
+        }
+        if (newCategoryOptional.isEmpty()) {
+            throw new NoSuchElementException("Нову категорію з ID " + newCategoryId + " не знайдено.");
+        }
+        if (productOptional.isEmpty()) {
+            throw new NoSuchElementException("Продукт з ID " + productId + " не знайдено.");
+        }
+
+        Category currentCategory = currentCategoryOptional.get();
+        Category newCategory = newCategoryOptional.get();
+        Product productToRemove = productOptional.get();
+
+        if (!currentCategory.getProducts().contains(productToRemove)) {
+            throw new IllegalArgumentException("Продукт з ID " + productId + " не належить до категорії з ID " + currentCategoryId + ".");
+        }
+
+        currentCategory.removeProduct(productToRemove); // Оновлюємо колекцію поточної категорії
+        productToRemove.setCategory(newCategory);       // Встановлюємо нову категорію для продукту
+        newCategory.addProduct(productToRemove);       // Додаємо продукт до колекції нової категорії
+
+        categoryRepo.save(currentCategory); // Зберігаємо зміни в поточній категорії
+        categoryRepo.save(newCategory);     // Зберігаємо зміни в новій категорії
+        productRepo.save(productToRemove);   // Зберігаємо зміни в продукті
     }
 
     /**

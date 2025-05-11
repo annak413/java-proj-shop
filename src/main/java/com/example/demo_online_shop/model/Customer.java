@@ -1,8 +1,8 @@
 package com.example.demo_online_shop.model;// Customer.java
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
+
 
 @Entity
 @Table(name = "customers")
