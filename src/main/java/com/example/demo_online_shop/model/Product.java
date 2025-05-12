@@ -1,8 +1,11 @@
 // Product.java
 package com.example.demo_online_shop.model;
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 @Entity
 @Table(name = "products")
@@ -26,6 +29,7 @@ public class Product {
     private Set<Store> stores = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private Set<Purchase> purchases = new HashSet<>();
 
     public Product() {}
@@ -105,6 +109,6 @@ public class Product {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(id);
     }
 }

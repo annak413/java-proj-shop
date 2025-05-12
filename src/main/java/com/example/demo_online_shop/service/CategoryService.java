@@ -35,7 +35,9 @@ public class CategoryService {
     public Product addNewProductToCategory(Long categoryId, Product product) {
         Optional<Category> categoryOptional = categoryRepo.findById(categoryId);
         if (categoryOptional.isPresent()) {
-            product.setCategory(categoryOptional.get());
+            Category category = categoryOptional.get();
+            product.setCategory(category);
+            category.addProduct(product); // Додано виклик для оновлення зв'язку з боку Category
             return productRepo.save(product);
         } else {
             throw new IllegalArgumentException("Категорію з ID " + categoryId + " не знайдено.");

@@ -1,8 +1,10 @@
 package com.example.demo_online_shop.model;// Customer.java
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
+import jakarta.persistence.CascadeType;
 
 @Entity
 @Table(name = "customers")
@@ -19,6 +21,7 @@ public class Customer {
     private String email;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Purchase> purchases = new HashSet<>();
 
     public Customer() {}

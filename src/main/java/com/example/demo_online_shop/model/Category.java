@@ -1,6 +1,8 @@
 // Category.java
 package com.example.demo_online_shop.model;
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.*;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Objects;
@@ -18,6 +20,7 @@ public class Category {
     private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Product> products = new HashSet<>();
 
     public Category() {}
@@ -62,6 +65,7 @@ public class Category {
 
     public void removeProduct(Product product) {
         if (product != null && products.remove(product)) {
+            products.remove(product);
             product.setCategory(null);
         }
     }

@@ -1,6 +1,6 @@
 // Purchase.java
 package com.example.demo_online_shop.model;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
