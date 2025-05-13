@@ -70,10 +70,13 @@ public class Store {
 
     public void addProduct(Product product) {
         products.add(product);
+        product.getStores().add(this);
     }
 
     public void removeProduct(Product product) {
+
         products.remove(product);
+        product.getStores().remove(this);
     }
 
     @Override

@@ -65,7 +65,7 @@ public class Category {
 
     public void removeProduct(Product product) {
         if (product != null && products.remove(product)) {
-            products.remove(product);
+//            products.remove(product);
             product.setCategory(null);
         }
     }

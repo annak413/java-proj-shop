@@ -48,10 +48,18 @@ public class CustomerService {
         if (customerOptional.isPresent() && productOptional.isPresent()) {
             Customer customer = customerOptional.get();
             Product product = productOptional.get();
+
+            boolean alreadyPurchased = purchaseRepo.existsByCustomerAndProductAndPurchaseDate(customer, product, purchaseDate);
+            if (alreadyPurchased) {
+                throw new IllegalStateException("Цей товар уже був куплений цим покупцем у вказану дату.");
+            }
+
             Purchase purchase = new Purchase(customer, product, purchaseDate);
             purchaseRepo.save(purchase);
         } else {
-            String errorMessage = !customerOptional.isPresent() ? "Покупця з ID " + customerId + " не знайдено." : "Продукт з ID " + productId + " не знайдено.";
+            String errorMessage = !customerOptional.isPresent()
+                    ? "Покупця з ID " + customerId + " не знайдено."
+                    : "Продукт з ID " + productId + " не знайдено.";
             throw new IllegalArgumentException(errorMessage);
         }
     }
