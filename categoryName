@@ -1,0 +1,24 @@
+package com.onlineshops.yourprojectname.dto;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductDTO {
+    private Long id;
+    private String name;
+    private BigDecimal price;
+    private String producer;
+    private String countryOfOrigin;
+    private Double weight;
+    private String description;
+    private List<String> imageUrls;
+    private Long categoryId;
+    private String categoryName; // For display purposes
+}

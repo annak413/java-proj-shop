@@ -1,0 +1,3148 @@
+Index: customers.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/customers.html b/customers.html
+new file mode 100644
+--- /dev/null	(date 1748433770884)
++++ b/customers.html	(date 1748433770884)
+@@ -0,0 +1,20 @@
++<!DOCTYPE html>
++<html lang="uk">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Керування</title>
++    <link rel="stylesheet" href="styles.css">
++</head>
++<body>
++<nav id="main-nav">
++    <button onclick="showProductsWithFilter()">Продукти</button>
++    <button onclick="showCustomers()">Клієнти</button>
++    <button onclick="showCategories()">Категорії</button>
++</nav>
++<div id="content">
++</div>
++
++<script src="script.js"></script>
++</body>
++</html>
+\ No newline at end of file
+Index: data.sql
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/data.sql b/data.sql
+new file mode 100644
+--- /dev/null	(date 1748444731375)
++++ b/data.sql	(date 1748444731375)
+@@ -0,0 +1,102 @@
++-- Categories
++INSERT INTO categories (name) VALUES ('Електроніка') ON CONFLICT (name) DO NOTHING;
++INSERT INTO categories (name) VALUES ('Одяг') ON CONFLICT (name) DO NOTHING;
++INSERT INTO categories (name) VALUES ('Продукти') ON CONFLICT (name) DO NOTHING;
++
++-- Products (linking to categories)
++INSERT INTO products (name, price, producer, country_of_origin, weight, description, category_id)
++SELECT 'Смартфон XYZ', 12500.00, 'TechCorp', 'Китай', 0.2, 'Потужний смартфон з відмінною камерою.', c.id FROM categories c WHERE c.name = 'Електроніка'
++ON CONFLICT (name) DO NOTHING;
++
++INSERT INTO products (name, price, producer, country_of_origin, weight, description, category_id)
++SELECT 'Футболка Бавовняна', 450.50, 'FashionWear', 'Туреччина', 0.15, 'Легка та зручна бавовняна футболка.', c.id FROM categories c WHERE c.name = 'Одяг'
++ON CONFLICT (name) DO NOTHING;
++
++INSERT INTO products (name, price, producer, country_of_origin, weight, description, category_id)
++SELECT 'Молоко 3.2%', 35.00, 'Ранкова Свіжість', 'Україна', 1.0, 'Натуральне молоко від локального виробника.', c.id FROM categories c WHERE c.name = 'Продукти'
++ON CONFLICT (name) DO NOTHING;
++
++INSERT INTO products (name, price, producer, country_of_origin, weight, description, category_id)
++SELECT 'Ноутбук GamingPro', 35000.00, 'GameTech', 'Тайвань', 2.5, 'Ігровий ноутбук високої продуктивності.', c.id FROM categories c WHERE c.name = 'Електроніка'
++ON CONFLICT (name) DO NOTHING;
++
++-- Stores
++INSERT INTO stores (name, location) VALUES ('ТехноСвіт', 'Київ, вул. Хрещатик, 10') ON CONFLICT (name) DO NOTHING;
++INSERT INTO stores (name, location) VALUES ('Стильний Вибір', 'Львів, пл. Ринок, 5') ON CONFLICT (name) DO NOTHING;
++INSERT INTO stores (name, location) VALUES ('АТБ Маркет', 'Одеса, вул. Дерибасівська, 1') ON CONFLICT (name) DO NOTHING;
++
++-- Customers
++INSERT INTO customers (name, email, phone_number, password) VALUES ('Іван Петров', 'ivan.petrov@example.com', '0981234567', 'password123') ON CONFLICT (email) DO NOTHING;
++INSERT INTO customers (name, email, phone_number, password) VALUES ('Марія Іваненко', 'maria.ivanenko@example.com', '0509876543', 'securepass') ON CONFLICT (email) DO NOTHING;
++
++-- Link products to stores (assuming IDs are 1, 2, 3 for products and stores)
++-- You'll need to know the actual IDs generated after initial insertion.
++-- This part is more tricky with `ON CONFLICT DO NOTHING` as IDs might vary.
++-- A more robust way would be to fetch IDs. For demonstration, let's try.
++
++-- Fetch IDs for products and stores
++-- SELECT id FROM products WHERE name = 'Смартфон XYZ';
++-- SELECT id FROM products WHERE name = 'Футболка Бавовняна';
++-- SELECT id FROM products WHERE name = 'Молоко 3.2%';
++-- SELECT id FROM stores WHERE name = 'ТехноСвіт';
++-- SELECT id FROM stores WHERE name = 'Стильний Вибір';
++-- SELECT id FROM stores WHERE name = 'АТБ Маркет';
++
++-- Example insertions for store_products (you might need to adjust IDs after your first run)
++-- INSERT INTO store_products (store_id, product_id) VALUES (1, 1); -- ТехноСвіт sells Смартфон XYZ
++-- INSERT INTO store_products (store_id, product_id) VALUES (1, 4); -- ТехноСвіт sells Ноутбук GamingPro
++-- INSERT INTO store_products (store_id, product_id) VALUES (2, 2); -- Стильний Вибір sells Футболка Бавовняна
++-- INSERT INTO store_products (store_id, product_id) VALUES (3, 3); -- АТБ Маркет sells Молоко 3.2%
++-- INSERT INTO store_products (store_id, product_id) VALUES (3, 1); -- АТБ Маркет also sells Смартфон XYZ (example)
++
++-- To make initial ManyToMany associations work with `data.sql` and `ON CONFLICT`,
++-- it's usually better to have more explicit `SELECT id FROM ...` subqueries.
++-- For simplicity, let's assume direct IDs for a first run where tables are empty.
++-- If you run this multiple times, adjust or manually insert these.
++
++-- For store_products, it's safer to use subqueries or run this manually after initial data:
++INSERT INTO store_products (store_id, product_id)
++SELECT s.id, p.id FROM stores s, products p
++WHERE s.name = 'ТехноСвіт' AND p.name = 'Смартфон XYZ'
++ON CONFLICT DO NOTHING;
++
++INSERT INTO store_products (store_id, product_id)
++SELECT s.id, p.id FROM stores s, products p
++WHERE s.name = 'ТехноСвіт' AND p.name = 'Ноутбук GamingPro'
++ON CONFLICT DO NOTHING;
++
++INSERT INTO store_products (store_id, product_id)
++SELECT s.id, p.id FROM stores s, products p
++WHERE s.name = 'Стильний Вибір' AND p.name = 'Футболка Бавовняна'
++ON CONFLICT DO NOTHING;
++
++INSERT INTO store_products (store_id, product_id)
++SELECT s.id, p.id FROM stores s, products p
++WHERE s.name = 'АТБ Маркет' AND p.name = 'Молоко 3.2%'
++ON CONFLICT DO NOTHING;
++
++INSERT INTO store_products (store_id, product_id)
++SELECT s.id, p.id FROM stores s, products p
++WHERE s.name = 'АТБ Маркет' AND p.name = 'Смартфон XYZ'
++ON CONFLICT DO NOTHING;
++
++-- Product Image URLs
++INSERT INTO product_image_urls (product_id, image_url)
++SELECT p.id, 'https://example.com/images/smartphone_xyz_1.jpg' FROM products p WHERE p.name = 'Смартфон XYZ' ON CONFLICT DO NOTHING;
++INSERT INTO product_image_urls (product_id, image_url)
++SELECT p.id, 'https://example.com/images/smartphone_xyz_2.jpg' FROM products p WHERE p.name = 'Смартфон XYZ' ON CONFLICT DO NOTHING;
++
++INSERT INTO product_image_urls (product_id, image_url)
++SELECT p.id, 'https://example.com/images/tshirt_1.jpg' FROM products p WHERE p.name = 'Футболка Бавовняна' ON CONFLICT DO NOTHING;
++
++INSERT INTO product_image_urls (product_id, image_url)
++SELECT p.id, 'https://example.com/images/milk_1.jpg' FROM products p WHERE p.name = 'Молоко 3.2%' ON CONFLICT DO NOTHING;
++
++-- Purchases (example)
++INSERT INTO purchases (customer_id, product_id, purchase_date)
++SELECT c.id, p.id, NOW() FROM customers c, products p
++WHERE c.email = 'ivan.petrov@example.com' AND p.name = 'Смартфон XYZ';
++
++INSERT INTO purchases (customer_id, product_id, purchase_date)
++SELECT c.id, p.id, NOW() FROM customers c, products p
++WHERE c.email = 'maria.ivanenko@example.com' AND p.name = 'Футболка Бавовняна';
+\ No newline at end of file
+Index: styles.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/styles.css b/styles.css
+new file mode 100644
+--- /dev/null	(date 1748516653475)
++++ b/styles.css	(date 1748516653475)
+@@ -0,0 +1,135 @@
++body {
++    font-family: Arial, sans-serif;
++    margin: 0;
++    padding: 0;
++    background-color: #f4f4f4;
++    color: #333;
++}
++
++.navbar {
++    background-color: #333;
++    padding: 10px 0;
++    text-align: center;
++}
++
++.nav-button {
++    background-color: #5cb85c; /* Green */
++    color: white;
++    padding: 10px 20px;
++    border: none;
++    border-radius: 5px;
++    cursor: pointer;
++    margin: 0 5px;
++    font-size: 16px;
++    transition: background-color 0.3s ease;
++}
++
++.nav-button:hover {
++    background-color: #4cae4c;
++}
++
++.nav-button.active {
++    background-color: #286090; /* Darker blue for active */
++}
++
++.container {
++    max-width: 900px;
++    margin: 20px auto;
++    padding: 20px;
++    background-color: #fff;
++    border-radius: 8px;
++    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
++}
++
++h1, h2 {
++    color: #333;
++    text-align: center;
++    margin-bottom: 20px;
++}
++
++.filter-section, .actions {
++    margin-bottom: 20px;
++    text-align: center;
++}
++
++.filter-section label {
++    margin-right: 10px;
++}
++
++select, input[type="text"], input[type="number"] {
++    padding: 8px;
++    border: 1px solid #ddd;
++    border-radius: 4px;
++    margin-top: 5px;
++    width: calc(100% - 100px); /* Adjust as needed */
++    box-sizing: border-box;
++}
++
++.form-group {
++    margin-bottom: 15px;
++}
++
++.form-group label {
++    display: block;
++    margin-bottom: 5px;
++    font-weight: bold;
++}
++
++.btn {
++    padding: 10px 15px;
++    border: none;
++    border-radius: 5px;
++    cursor: pointer;
++    font-size: 16px;
++    transition: background-color 0.3s ease;
++    margin: 5px;
++}
++
++.btn-primary {
++    background-color: #007bff;
++    color: white;
++}
++
++.btn-primary:hover {
++    background-color: #0056b3;
++}
++
++.btn-secondary {
++    background-color: #6c757d;
++    color: white;
++}
++
++.btn-secondary:hover {
++    background-color: #5a6268;
++}
++
++.btn-success {
++    background-color: #28a745;
++    color: white;
++}
++
++.btn-success:hover {
++    background-color: #218838;
++}
++
++.btn-cancel {
++    background-color: #dc3545;
++    color: white;
++}
++
++.btn-cancel:hover {
++    background-color: #c82333;
++}
++
++.product-item {
++    background-color: #f9f9f9;
++    border: 1px solid #eee;
++    padding: 15px;
++    margin-bottom: 10px;
++    border-radius: 5px;
++}
++
++.product-item h3 {
++    margin-top: 0;
++    color: #0056b3;
++}
+\ No newline at end of file
+Index: categories.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/categories.html b/categories.html
+new file mode 100644
+--- /dev/null	(date 1748519406641)
++++ b/categories.html	(date 1748519406641)
+@@ -0,0 +1,27 @@
++<!DOCTYPE html>
++<html lang="uk">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Керування</title>
++    <link rel="stylesheet" href="styles.css">
++</head>
++<body>
++<nav id="main-nav">
++    <button onclick="showProducts()">Продукти</button>
++    <button onclick="showCustomers()">Клієнти</button>
++    <button onclick="showCategories()">Категорії</button>
++</nav>
++<div id="content">
++    <h1>Продукти</h1>
++    <div id="product-list">
++    </div>
++    <button onclick="showAddProductForm()">Додати продукт</button>
++    <div id="add-product-form" style="display:none;">
++    </div>
++</div>
++
++<script src="script.js"></script>
++</body>
++</html>
++
+Index: ProductController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ProductController.java b/ProductController.java
+new file mode 100644
+--- /dev/null	(date 1748434299788)
++++ b/ProductController.java	(date 1748434299788)
+@@ -0,0 +1,86 @@
++package com.onlineshops.yourprojectname.controller;
++
++import com.onlineshops.yourprojectname.dto.ProductDTO;
++import com.onlineshops.yourprojectname.model.Product;
++import com.onlineshops.yourprojectname.model.Store;
++import com.onlineshops.yourprojectname.service.ProductService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/products")
++@CrossOrigin(origins = "http://127.0.0.1:5500")
++public class ProductController {
++    @Autowired
++    private ProductService productService;
++
++    @GetMapping("/dto") // Endpoint for DTOs
++    public List<ProductDTO> getAllProductsDto(
++            @RequestParam(required = false) String sortByPrice) {
++        if (sortByPrice != null) {
++            return productService.getProductsSortedByPrice(sortByPrice);
++        }
++        return productService.getAllProducts();
++    }
++
++    @GetMapping("/dto/{id}") // Endpoint for DTO
++    public ResponseEntity<ProductDTO> getProductByIdDto(@PathVariable Long id) {
++        return productService.getProductById(id)
++                .map(ResponseEntity::ok)
++                .orElse(ResponseEntity.notFound().build());
++    }
++
++    @PostMapping("/dto") // Endpoint for DTO
++    public ResponseEntity<?> createProductDto(@RequestBody ProductDTO productDto) {
++        try {
++            ProductDTO createdProduct = productService.createProduct(productDto);
++            return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
++        } catch (RuntimeException e) {
++            return ResponseEntity.badRequest().body(e.getMessage());
++        }
++    }
++
++    @PutMapping("/dto/{id}") // Endpoint for DTO
++    public ResponseEntity<?> updateProductDto(@PathVariable Long id, @RequestBody ProductDTO productDetailsDto) {
++        try {
++            ProductDTO updatedProduct = productService.updateProduct(id, productDetailsDto);
++            return ResponseEntity.ok(updatedProduct);
++        } catch (RuntimeException e) {
++            return ResponseEntity.notFound().build();
++        }
++    }
++
++    @DeleteMapping("/{id}")
++    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
++        try {
++            productService.deleteProduct(id);
++            return ResponseEntity.noContent().build();
++        } catch (RuntimeException e) {
++            return ResponseEntity.notFound().build();
++        }
++    }
++
++    @GetMapping("/category/{categoryId}")
++    public List<ProductDTO> getProductsByCategory(@PathVariable Long categoryId) {
++        return productService.getProductsByCategoryId(categoryId);
++    }
++
++    @PostMapping("/{productId}/add-to-store/{storeId}")
++    public ResponseEntity<Product> addProductToStore(@PathVariable Long productId, @PathVariable Long storeId) {
++        try {
++            Product updatedProduct = productService.addProductToStore(productId, storeId);
++            return ResponseEntity.ok(updatedProduct);
++        } catch (RuntimeException e) {
++            return ResponseEntity.badRequest().body(null); // Or more specific error response
++        }
++    }
++
++    @GetMapping("/{productId}/stores")
++    public List<Store> getStoresByProductId(@PathVariable Long productId) {
++        return productService.getStoresByProductId(productId);
++    }
++}
+\ No newline at end of file
+Index: CustomerController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CustomerController.java b/CustomerController.java
+new file mode 100644
+--- /dev/null	(date 1748434327066)
++++ b/CustomerController.java	(date 1748434327066)
+@@ -0,0 +1,63 @@
++package com.onlineshops.yourprojectname.controller;
++
++import com.onlineshops.yourprojectname.dto.CustomerDTO;
++import com.onlineshops.yourprojectname.model.Customer;
++import com.onlineshops.yourprojectname.service.CustomerService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/customers")
++@CrossOrigin(origins = "http://127.0.0.1:5500")
++public class CustomerController {
++    @Autowired
++    private CustomerService customerService;
++
++    @GetMapping
++    public List<CustomerDTO> getAllCustomers() {
++        return customerService.getAllCustomers();
++    }
++
++    @GetMapping("/{id}")
++    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
++        return customerService.getCustomerById(id)
++                .map(ResponseEntity::ok)
++                .orElse(ResponseEntity.notFound().build());
++    }
++
++    @PostMapping
++    public ResponseEntity<?> createCustomer(@RequestBody Customer customer) {
++        try {
++            CustomerDTO createdCustomer = customerService.createCustomer(customer);
++            return ResponseEntity.status(HttpStatus.CREATED).body(createdCustomer);
++        } catch (IllegalArgumentException e) {
++            return ResponseEntity.badRequest().body(e.getMessage());
++        }
++    }
++
++    @PutMapping("/{id}")
++    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody Customer customerDetails) {
++        try {
++            CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDetails);
++            return ResponseEntity.ok(updatedCustomer);
++        } catch (RuntimeException e) {
++            return ResponseEntity.notFound().build();
++        } catch (IllegalArgumentException e) {
++            return ResponseEntity.badRequest().body(e.getMessage());
++        }
++    }
++
++    @DeleteMapping("/{id}")
++    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
++        try {
++            customerService.deleteCustomer(id);
++            return ResponseEntity.noContent().build();
++        } catch (RuntimeException e) {
++            return ResponseEntity.notFound().build();
++        }
++    }
++}
+\ No newline at end of file
+Index: StoreController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/StoreController.java b/StoreController.java
+new file mode 100644
+--- /dev/null	(date 1748434205941)
++++ b/StoreController.java	(date 1748434205941)
+@@ -0,0 +1,63 @@
++package com.onlineshops.yourprojectname.controller;
++
++import com.onlineshops.yourprojectname.dto.StoreDTO;
++import com.onlineshops.yourprojectname.model.Store;
++import com.onlineshops.yourprojectname.service.StoreService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/stores")
++@CrossOrigin(origins = "http://127.0.0.1:5500")
++public class StoreController {
++    @Autowired
++    private StoreService storeService;
++
++    @GetMapping
++    public List<StoreDTO> getAllStores() {
++        return storeService.getAllStores();
++    }
++
++    @GetMapping("/{id}")
++    public ResponseEntity<StoreDTO> getStoreById(@PathVariable Long id) {
++        return storeService.getStoreById(id)
++                .map(ResponseEntity::ok)
++                .orElse(ResponseEntity.notFound().build());
++    }
++
++    @PostMapping
++    public ResponseEntity<?> createStore(@RequestBody Store store) {
++        try {
++            StoreDTO createdStore = storeService.createStore(store);
++            return ResponseEntity.status(HttpStatus.CREATED).body(createdStore);
++        } catch (IllegalArgumentException e) {
++            return ResponseEntity.badRequest().body(e.getMessage());
++        }
++    }
++
++    @PutMapping("/{id}")
++    public ResponseEntity<?> updateStore(@PathVariable Long id, @RequestBody Store storeDetails) {
++        try {
++            StoreDTO updatedStore = storeService.updateStore(id, storeDetails);
++            return ResponseEntity.ok(updatedStore);
++        } catch (RuntimeException e) {
++            return ResponseEntity.notFound().build();
++        } catch (IllegalArgumentException e) {
++            return ResponseEntity.badRequest().body(e.getMessage());
++        }
++    }
++
++    @DeleteMapping("/{id}")
++    public ResponseEntity<Void> deleteStore(@PathVariable Long id) {
++        try {
++            storeService.deleteStore(id);
++            return ResponseEntity.noContent().build();
++        } catch (RuntimeException e) {
++            return ResponseEntity.notFound().build();
++        }
++    }
++}
+\ No newline at end of file
+Index: PurchaseController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PurchaseController.java b/PurchaseController.java
+new file mode 100644
+--- /dev/null	(date 1748434237337)
++++ b/PurchaseController.java	(date 1748434237337)
+@@ -0,0 +1,69 @@
++package com.onlineshops.yourprojectname.controller;
++
++import com.onlineshops.yourprojectname.dto.PurchaseDTO;
++import com.onlineshops.yourprojectname.service.PurchaseService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++import java.util.Map;
++
++@RestController
++@RequestMapping("/api/purchases")
++@CrossOrigin(origins = "http://127.0.0.1:5500")
++public class PurchaseController {
++    @Autowired
++    private PurchaseService purchaseService;
++
++    @GetMapping
++    public List<PurchaseDTO> getAllPurchases() {
++        return purchaseService.getAllPurchases();
++    }
++
++    @GetMapping("/{id}")
++    public ResponseEntity<PurchaseDTO> getPurchaseById(@PathVariable Long id) {
++        return purchaseService.getPurchaseById(id)
++                .map(ResponseEntity::ok)
++                .orElse(ResponseEntity.notFound().build());
++    }
++
++    @PostMapping // Expects JSON like: { "customerId": 1, "productId": 1, "storeId": 1 }
++    public ResponseEntity<?> registerPurchase(@RequestBody Map<String, Long> payload) {
++        Long customerId = payload.get("customerId");
++        Long productId = payload.get("productId");
++        Long storeId = payload.get("storeId"); // Optional: for checking product availability in store
++
++        if (customerId == null || productId == null || storeId == null) {
++            return ResponseEntity.badRequest().body("Customer ID, Product ID, and Store ID are required.");
++        }
++
++        try {
++            PurchaseDTO purchase = purchaseService.registerPurchase(customerId, productId, storeId);
++            return ResponseEntity.status(HttpStatus.CREATED).body(purchase);
++        } catch (RuntimeException e) {
++            return ResponseEntity.badRequest().body(e.getMessage());
++        }
++    }
++
++    @DeleteMapping("/{id}")
++    public ResponseEntity<Void> deletePurchase(@PathVariable Long id) {
++        try {
++            purchaseService.deletePurchase(id);
++            return ResponseEntity.noContent().build();
++        } catch (RuntimeException e) {
++            return ResponseEntity.notFound().build();
++        }
++    }
++
++    @GetMapping("/customer/{customerId}")
++    public List<PurchaseDTO> getPurchasesByCustomerId(
++            @PathVariable Long customerId,
++            @RequestParam(required = false) String sortByDate) {
++        if (sortByDate != null) {
++            return purchaseService.getPurchasesByCustomerIdSortedByDate(customerId, sortByDate);
++        }
++        return purchaseService.getPurchasesByCustomerId(customerId);
++    }
++}
+\ No newline at end of file
+Index: PROECT.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PROECT.html b/PROECT.html
+new file mode 100644
+--- /dev/null	(date 1748608041525)
++++ b/PROECT.html	(date 1748608041525)
+@@ -0,0 +1,555 @@
++<!DOCTYPE html>
++<html lang="uk">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Керування Продуктами та Клієнтами</title>
++    <script src="https://cdn.tailwindcss.com"></script>
++    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
++
++    <style>
++        /* Імпортуємо шрифт Inter */
++        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
++
++        /* Застосовуємо шрифт до всього тіла документа */
++        body {
++            font-family: 'Inter', sans-serif;
++        }
++
++        /* Загальні стилі для кнопок (додатково до Tailwind) */
++        button {
++            cursor: pointer;
++            transition: all 0.3s ease;
++        }
++
++        /* Стилі для карток продуктів */
++        .product-card, .customer-card { /* Застосовуємо до обох типів карток */
++            background-color: #ffffff;
++            border-radius: 0.75rem; /* rounded-lg */
++            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
++            padding: 1.5rem; /* p-6 */
++            display: flex;
++            flex-direction: column;
++            align-items: center;
++            text-align: center;
++            position: relative; /* Додано для позиціонування кнопки видалення */
++        }
++
++        .product-card img {
++            max-width: 100%;
++            height: 150px; /* Фіксована висота для зображень */
++            object-fit: contain; /* Зберігаємо співвідношення сторін, вміщуючи зображення */
++            border-radius: 0.5rem; /* rounded-md */
++            margin-bottom: 1rem; /* mb-4 */
++            background-color: #f0f0f0; /* Фоновий колір для порожніх зображень */
++        }
++
++        .product-card h3, .customer-card h3 {
++            font-size: 1.25rem; /* text-xl */
++            font-weight: 600; /* font-semibold */
++            color: #374151; /* text-gray-700 */
++            margin-bottom: 0.5rem; /* mb-2 */
++        }
++
++        .product-card p, .customer-card p {
++            font-size: 0.875rem; /* text-sm */
++            color: #6b7280; /* text-gray-600 */
++            margin-bottom: 0.25rem; /* mb-1 */
++        }
++
++        /* Стилі для форм */
++        #product-form label, #customer-form label {
++            font-weight: 600; /* font-semibold */
++            color: #374151; /* text-gray-700 */
++        }
++
++        #product-form input[type="text"],
++        #product-form input[type="url"],
++        #product-form input[type="number"],
++        #product-form select,
++        #customer-form input[type="text"],
++        #customer-form input[type="email"] { /* Додано стилі для інпутів клієнтів */
++            border: 1px solid #dc2626; /* border-red-300 згідно скріншоту */
++            padding: 0.75rem 1rem; /* py-3 px-4 */
++            border-radius: 0.5rem; /* rounded-lg */
++            width: 100%;
++            box-sizing: border-box; /* Враховуємо padding у ширині */
++        }
++
++        #product-form input:focus,
++        #product-form select:focus,
++        #customer-form input:focus { /* Додано фокус стилі для інпутів клієнтів */
++            outline: none;
++            border-color: #3b82f6; /* blue-500 */
++            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* ring-2 ring-blue-500 */
++        }
++
++        /* Стилі для кнопки видалення */
++        .delete-button {
++            position: absolute;
++            top: 0.5rem;
++            right: 0.5rem;
++            background-color: #ef4444; /* red-600 */
++            color: white;
++            border: none;
++            padding: 0.5rem 0.75rem;
++            border-radius: 0.25rem;
++            cursor: pointer;
++            transition: background-color 0.3s ease;
++            z-index: 10; /* Щоб кнопка була поверх зображення */
++        }
++
++        .delete-button:hover {
++            background-color: #dc2626; /* red-700 */
++        }
++
++        /* Адаптивний дизайн для мобільних пристроїв */
++        @media (max-width: 768px) {
++            #main-nav .container {
++                flex-direction: column;
++                gap: 0.75rem; /* gap-3 */
++            }
++            #main-nav button {
++                width: 100%;
++            }
++            #product-list, #customer-list { /* Адаптуємо обидва списки */
++                grid-template-columns: 1fr; /* Один стовпець на мобільних */
++            }
++            #add-product-form, #add-customer-form { /* Адаптуємо обидві форми */
++                padding: 1.5rem; /* p-6 */
++            }
++        }
++    </style>
++</head>
++<body class="font-inter bg-gray-100 min-h-screen flex flex-col">
++
++<nav id="main-nav" class="bg-white p-4 shadow-md">
++    <div class="container mx-auto flex justify-center space-x-4">
++        <button id="products-btn" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">Продукти</button>
++        <button id="customers-btn" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">Клієнти</button>
++        <button id="categories-btn" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">Категорії</button>
++    </div>
++</nav>
++
++<div id="content" class="container mx-auto p-6 flex-grow bg-white rounded-lg shadow-md mt-8">
++    <div id="product-view">
++        <h1 class="text-4xl font-bold text-gray-800 mb-6 text-center">Продукти</h1>
++
++        <div class="mb-6 flex items-center space-x-4">
++            <label for="filter-category" class="text-lg text-gray-700 font-medium">Фільтрувати за категорією:</label>
++            <select id="filter-category" class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
++                <option value="Усі категорії">Усі категорії</option>
++                <option value="Електроніка">Електроніка</option>
++                <option value="Одяг">Одяг</option>
++                <option value="Книги">Книги</option>
++                <option value="Їжа">Їжа</option>
++                <option value="Побутова техніка">Побутова техніка</option>
++            </select>
++        </div>
++
++        <div id="error-message" class="text-red-600 bg-red-100 border border-red-400 p-3 rounded-md mb-6 hidden">
++            <p>Не вдалося завантажити продукти: Помилка завантаження продуктів: 404 Not Found</p>
++            <p class="font-bold text-center mt-2">404 Not Found</p>
++        </div>
++
++        <div class="flex space-x-4 mb-6">
++            <button id="add-product-show-form-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Додати продукт</button>
++            <button id="update-product-list-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Оновити список продуктів</button>
++        </div>
++
++        <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
++        </div>
++        <p id="no-products-message" class="text-center text-gray-500 mt-8 hidden">Наразі немає продуктів. Додайте перший продукт!</p>
++    </div>
++
++    <div id="add-product-form" class="bg-white p-8 rounded-lg shadow-xl max-w-lg mx-auto mt-8 border border-gray-200 hidden">
++        <h2 class="text-2xl font-bold text-gray-800 mb-6">Додати новий продукт</h2>
++        <form id="product-form" class="space-y-4">
++            <div>
++                <label for="product-name" class="block text-gray-700 text-sm font-bold mb-2">Назва:</label>
++                <input type="text" id="product-name" name="product-name" required class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
++            </div>
++
++            <div>
++                <label for="product-price" class="block text-gray-700 text-sm font-bold mb-2">Ціна:</label>
++                <input type="number" id="product-price" name="product-price" required class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01" min="0">
++            </div>
++
++            <div>
++                <label for="product-manufacturer" class="block text-gray-700 text-sm font-bold mb-2">Виробник:</label>
++                <input type="text" id="product-manufacturer" name="product-manufacturer" class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
++            </div>
++
++            <div>
++                <label for="product-origin-country" class="block text-gray-700 text-sm font-bold mb-2">Країна походження:</label>
++                <input type="text" id="product-origin-country" name="product-origin-country" class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
++            </div>
++
++            <div>
++                <label for="product-category-form" class="block text-gray-700 text-sm font-bold mb-2">Категорія (для форми):</label>
++                <select id="product-category-form" name="product-category-form" class="shadow border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
++                    <option value="">Оберіть категорію</option>
++                    <option value="Електроніка">Електроніка</option>
++                    <option value="Одяг">Одяг</option>
++                    <option value="Книги">Книги</option>
++                    <option value="Їжа">Їжа</option>
++                    <option value="Побутова техніка">Побутова техніка</option>
++                </select>
++            </div>
++
++            <div>
++                <label for="product-image-url" class="block text-gray-700 text-sm font-bold mb-2">Посилання на зображення:</label>
++                <input type="url" id="product-image-url" name="product-image-url" class="shadow appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
++            </div>
++
++            <div class="flex justify-end space-x-4 mt-6">
++                <button type="button" id="cancel-add-product-btn" class="px-6 py-3 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">Скасувати</button>
++                <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Зберегти продукт</button>
++            </div>
++        </form>
++    </div>
++
++    <div id="customer-view" class="hidden">
++        <h1 class="text-4xl font-bold text-gray-800 mb-6 text-center">Клієнти</h1>
++
++        <div class="flex space-x-4 mb-6">
++            <button id="add-customer-show-form-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Додати клієнта</button>
++            <button id="update-customer-list-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Оновити список клієнтів</button>
++        </div>
++
++        <div id="customer-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
++        </div>
++        <p id="no-customers-message" class="text-center text-gray-500 mt-8 hidden">Наразі немає клієнтів. Додайте першого клієнта!</p>
++    </div>
++
++    <div id="add-customer-form" class="bg-white p-8 rounded-lg shadow-xl max-w-lg mx-auto mt-8 border border-gray-200 hidden">
++        <h2 class="text-2xl font-bold text-gray-800 mb-6">Додати нового клієнта</h2>
++        <form id="customer-form" class="space-y-4">
++            <div>
++                <label for="customer-name" class="block text-gray-700 text-sm font-bold mb-2">Ім'я:</label>
++                <input type="text" id="customer-name" name="customer-name" required class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
++            </div>
++            <div>
++                <label for="customer-email" class="block text-gray-700 text-sm font-bold mb-2">Електронна пошта:</label>
++                <input type="email" id="customer-email" name="customer-email" required class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
++            </div>
++            <div class="flex justify-end space-x-4 mt-6">
++                <button type="button" id="cancel-add-customer-btn" class="px-6 py-3 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">Скасувати</button>
++                <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Зберегти клієнта</button>
++            </div>
++        </form>
++    </div>
++
++</div>
++
++<script>
++    // Масив для зберігання продуктів. Тимчасове зберігання в пам'яті.
++    let products = [
++        {
++            id: 1,
++            name: "Смартфон Pro X",
++            price: 25999.00,
++            manufacturer: "TechCorp",
++            originCountry: "Китай",
++            category: "Електроніка",
++            imageUrl: "https://via.placeholder.com/150/A3E4D7/FFFFFF?text=Смартфон+ProX"
++        },
++        {
++            id: 2,
++            name: "Футболка Бавовняна",
++            price: 499.50,
++            manufacturer: "StyleCo",
++            originCountry: "Туреччина",
++            category: "Одяг",
++            imageUrl: "https://via.placeholder.com/150/FAD7A0/FFFFFF?text=Футболка"
++        },
++        {
++            id: 3,
++            name: "Книга 'Історія'",
++            price: 350.00,
++            manufacturer: "Видавництво Знань",
++            originCountry: "Україна",
++            category: "Книги",
++            imageUrl: "https://via.placeholder.com/150/C3E1E0/FFFFFF?text=Книга"
++        },
++        {
++            id: 4,
++            name: "Мікрохвильова піч",
++            price: 3500.00,
++            manufacturer: "HomeTech",
++            originCountry: "Польща",
++            category: "Побутова техніка",
++            imageUrl: "https://via.placeholder.com/150/D2B4DE/FFFFFF?text=Мікрохвильова"
++        },
++        {
++            id: 5,
++            name: "Кава 'Арабіка'",
++            price: 180.00,
++            manufacturer: "CoffeeRoasters",
++            originCountry: "Бразилія",
++            category: "Їжа",
++            imageUrl: "https://via.placeholder.com/150/B5EAD7/FFFFFF?text=Кава"
++        }
++    ];
++
++    // Новий масив для зберігання клієнтів
++    let customers = [
++        {
++            id: 101,
++            name: "Oлена",
++            email: "olena.koval@mail.com"
++        },
++        {
++            id: 102,
++            name: "Іван ",
++            email: "ivan.petrenko@example.com"
++        },
++        {
++            id: 103,
++            name: "Марія Сидорова",
++            email: "maria.sidorova@example.com"
++        }
++    ];
++
++
++    // Отримуємо посилання на DOM-елементи продуктів
++    const productView = document.getElementById('product-view'); // Обгорнутий блок продуктів
++    const addProductForm = document.getElementById('add-product-form');
++    const productListDiv = document.getElementById('product-list');
++    const productForm = document.getElementById('product-form');
++    const noProductsMessage = document.getElementById('no-products-message');
++    const errorMessageDiv = document.getElementById('error-message');
++    const filterCategorySelect = document.getElementById('filter-category');
++
++    // Отримуємо посилання на DOM-елементи клієнтів
++    const customerView = document.getElementById('customer-view'); // Обгорнутий блок клієнтів
++    const addCustomerForm = document.getElementById('add-customer-form');
++    const customerListDiv = document.getElementById('customer-list');
++    const customerForm = document.getElementById('customer-form');
++    const noCustomersMessage = document.getElementById('no-customers-message');
++
++
++    // Отримуємо посилання на кнопки
++    const productsBtn = document.getElementById('products-btn');
++    const customersBtn = document.getElementById('customers-btn');
++    const categoriesBtn = document.getElementById('categories-btn'); // Заглушка для категорій
++
++    // Кнопки дій для продуктів
++    const addProductShowFormBtn = document.getElementById('add-product-show-form-btn');
++    const updateProductListBtn = document.getElementById('update-product-list-btn');
++    const cancelAddProductBtn = document.getElementById('cancel-add-product-btn');
++
++    // Кнопки дій для клієнтів
++    const addCustomerShowFormBtn = document.getElementById('add-customer-show-form-btn');
++    const updateCustomerListBtn = document.getElementById('update-customer-list-btn');
++    const cancelAddCustomerBtn = document.getElementById('cancel-add-customer-btn');
++
++
++    // --- Функції для Продуктів ---
++
++    // Функція для відображення секції продуктів та приховування інших
++    function showProducts() {
++        productView.classList.remove('hidden');
++        customerView.classList.add('hidden');
++        addProductForm.classList.add('hidden'); // Приховати форму продукту, якщо вона відкрита
++        addCustomerForm.classList.add('hidden'); // Приховати форму клієнта, якщо вона відкрита
++        errorMessageDiv.classList.add('hidden');
++        renderProducts();
++    }
++
++    // Функція для відображення форми додавання продукту
++    function showAddProductForm() {
++        productView.classList.add('hidden');
++        addProductForm.classList.remove('hidden');
++        productForm.reset();
++    }
++
++    // Функція для приховування форми додавання продукту
++    function hideAddProductForm() {
++        addProductForm.classList.add('hidden');
++        productView.classList.remove('hidden');
++    }
++
++    // Функція для додавання нового продукту
++    function addProduct(event) {
++        event.preventDefault();
++
++        const name = document.getElementById('product-name').value;
++        const price = parseFloat(document.getElementById('product-price').value);
++        const manufacturer = document.getElementById('product-manufacturer').value;
++        const originCountry = document.getElementById('product-origin-country').value;
++        const category = document.getElementById('product-category-form').value;
++        const imageUrl = document.getElementById('product-image-url').value;
++
++        const newProduct = {
++            id: Date.now(),
++            name: name,
++            price: isNaN(price) ? 0 : price,
++            manufacturer: manufacturer || 'Не вказано',
++            originCountry: originCountry || 'Не вказано',
++            category: category || 'Не вказано',
++            imageUrl: imageUrl || 'https://placehold.co/400x300/E0E0E0/606060?text=Без+зображення'
++        };
++
++        products.push(newProduct);
++        hideAddProductForm();
++        renderProducts();
++        productForm.reset();
++    }
++
++    // Функція для видалення продукту
++    function deleteProduct(productId) {
++        products = products.filter(product => product.id !== productId);
++        renderProducts();
++    }
++
++    // Функція для відображення продуктів у DOM з урахуванням фільтрації
++    function renderProducts() {
++        productListDiv.innerHTML = '';
++
++        const selectedCategory = filterCategorySelect.value;
++        let filteredProducts = products;
++
++        if (selectedCategory !== 'Усі категорії') {
++            filteredProducts = products.filter(product => product.category === selectedCategory);
++        }
++
++        if (filteredProducts.length === 0) {
++            noProductsMessage.classList.remove('hidden');
++        } else {
++            noProductsMessage.classList.add('hidden');
++        }
++
++        filteredProducts.forEach(product => {
++            const productCard = document.createElement('div');
++            productCard.classList.add('product-card');
++
++            productCard.innerHTML = `
++                <button class="delete-button" data-id="${product.id}" data-type="product">Видалити</button>
++                <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-40 object-contain rounded-md mb-4" onerror="this.onerror=null; this.src='https://placehold.co/400x300/E0E0E0/606060?text=Зображення+недоступне';">
++                <h3 class="text-xl font-semibold text-gray-700 mb-2">${product.name}</h3>
++                <p class="text-sm text-gray-600 mb-1">Ціна: ${product.price.toFixed(2)} грн</p>
++                <p class="text-sm text-gray-600 mb-1">Виробник: ${product.manufacturer}</p>
++                <p class="text-sm text-gray-600 mb-1">Країна походження: ${product.originCountry}</p>
++                <p class="text-sm text-gray-600">Категорія: ${product.category}</p>
++            `;
++            productListDiv.appendChild(productCard);
++        });
++
++        // Додаємо слухачів подій для кнопок видалення після рендерингу
++        document.querySelectorAll('.delete-button[data-type="product"]').forEach(button => {
++            button.addEventListener('click', (e) => {
++                const productId = parseInt(e.target.dataset.id);
++                deleteProduct(productId);
++            });
++        });
++    }
++
++    // --- Функції для Клієнтів ---
++
++    // Функція для відображення секції клієнтів та приховування інших
++    function showCustomers() {
++        customerView.classList.remove('hidden');
++        productView.classList.add('hidden');
++        addProductForm.classList.add('hidden'); // Приховати форму продукту, якщо вона відкрита
++        addCustomerForm.classList.add('hidden'); // Приховати форму клієнта, якщо вона відкрита
++        errorMessageDiv.classList.add('hidden');
++        renderCustomers();
++    }
++
++    // Функція для відображення форми додавання клієнта
++    function showAddCustomerForm() {
++        customerView.classList.add('hidden');
++        addCustomerForm.classList.remove('hidden');
++        customerForm.reset();
++    }
++
++    // Функція для приховування форми додавання клієнта
++    function hideAddCustomerForm() {
++        addCustomerForm.classList.add('hidden');
++        customerView.classList.remove('hidden');
++    }
++
++    // Функція для додавання нового клієнта
++    function addCustomer(event) {
++        event.preventDefault();
++
++        const name = document.getElementById('customer-name').value;
++        const email = document.getElementById('customer-email').value;
++
++        const newCustomer = {
++            id: Date.now(),
++            name: name,
++            email: email
++        };
++
++        customers.push(newCustomer);
++        hideAddCustomerForm();
++        renderCustomers();
++        customerForm.reset();
++    }
++
++    // Функція для видалення клієнта
++    function deleteCustomer(customerId) {
++        customers = customers.filter(customer => customer.id !== customerId);
++        renderCustomers();
++    }
++
++    // Функція для відображення клієнтів у DOM
++    function renderCustomers() {
++        customerListDiv.innerHTML = '';
++
++        if (customers.length === 0) {
++            noCustomersMessage.classList.remove('hidden');
++        } else {
++            noCustomersMessage.classList.add('hidden');
++        }
++
++        customers.forEach(customer => {
++            const customerCard = document.createElement('div');
++            customerCard.classList.add('customer-card');
++
++            customerCard.innerHTML = `
++                <button class="delete-button" data-id="${customer.id}" data-type="customer">Видалити</button>
++                <h3 class="text-xl font-semibold text-gray-700 mb-2">${customer.name}</h3>
++                <p class="text-sm text-gray-600">Email: ${customer.email}</p>
++            `;
++            customerListDiv.appendChild(customerCard);
++        });
++
++        // Додаємо слухачів подій для кнопок видалення після рендерингу
++        document.querySelectorAll('.delete-button[data-type="customer"]').forEach(button => {
++            button.addEventListener('click', (e) => {
++                const customerId = parseInt(e.target.dataset.id);
++                deleteCustomer(customerId);
++            });
++        });
++    }
++
++
++    // --- Додаємо обробники подій ---
++    document.addEventListener('DOMContentLoaded', () => {
++        // Ініціалізація: відображаємо продукти при завантаженні сторінки за замовчуванням
++        showProducts();
++
++        // Навігаційні кнопки
++        productsBtn.addEventListener('click', showProducts);
++        customersBtn.addEventListener('click', showCustomers); // Тепер показує розділ клієнтів
++        categoriesBtn.addEventListener('click', () => alert('Тут буде розділ "Категорії"'));
++
++        // Кнопки дій для продуктів
++        addProductShowFormBtn.addEventListener('click', showAddProductForm);
++        updateProductListBtn.addEventListener('click', renderProducts);
++        cancelAddProductBtn.addEventListener('click', hideAddProductForm);
++        productForm.addEventListener('submit', addProduct);
++        filterCategorySelect.addEventListener('change', renderProducts);
++
++        // Кнопки дій для клієнтів
++        addCustomerShowFormBtn.addEventListener('click', showAddCustomerForm);
++        updateCustomerListBtn.addEventListener('click', renderCustomers);
++        cancelAddCustomerBtn.addEventListener('click', hideAddCustomerForm);
++        customerForm.addEventListener('submit', addCustomer);
++    });
++</script>
++</body>
++</html>
+\ No newline at end of file
+Index: PurchaseService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PurchaseService.java b/PurchaseService.java
+new file mode 100644
+--- /dev/null	(date 1748434419139)
++++ b/PurchaseService.java	(date 1748434419139)
+@@ -0,0 +1,107 @@
++package com.onlineshops.yourprojectname.service;
++
++import com.onlineshops.yourprojectname.dto.PurchaseDTO;
++import com.onlineshops.yourprojectname.model.Customer;
++import com.onlineshops.yourprojectname.model.Product;
++import com.onlineshops.yourprojectname.model.Purchase;
++import com.onlineshops.yourprojectname.repository.PurchaseRepository;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++
++import java.time.LocalDateTime;
++import java.util.List;
++import java.util.Optional;
++import java.util.stream.Collectors;
++
++@Service
++public class PurchaseService {
++    @Autowired
++    private PurchaseRepository purchaseRepository;
++    @Autowired
++    private CustomerService customerService;
++    @Autowired
++    private ProductService productService;
++    @Autowired
++    private StoreService storeService; // To check if product is in store
++
++    private PurchaseDTO convertToDto(Purchase purchase) {
++        return new PurchaseDTO(
++                purchase.getId(),
++                purchase.getCustomer().getId(),
++                purchase.getCustomer().getName(),
++                purchase.getProduct().getId(),
++                purchase.getProduct().getName(),
++                purchase.getProduct().getPrice(),
++                purchase.getPurchaseDate()
++        );
++    }
++
++    public List<PurchaseDTO> getAllPurchases() {
++        return purchaseRepository.findAll().stream()
++                .map(this::convertToDto)
++                .collect(Collectors.toList());
++    }
++
++    public Optional<PurchaseDTO> getPurchaseById(Long id) {
++        return purchaseRepository.findById(id)
++                .map(this::convertToDto);
++    }
++
++    // Register a new purchase
++    public PurchaseDTO registerPurchase(Long customerId, Long productId, Long storeId) {
++        Customer customer = customerService.getCustomerEntityById(customerId)
++                .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
++        Product product = productService.getProductEntityById(productId)
++                .orElseThrow(() -> new RuntimeException("Product not found with id " + productId));
++
++        // Check if product is available in the specified store
++        boolean isProductInStore = storeService.getStoreEntityById(storeId)
++                .map(store -> store.getProducts().contains(product))
++                .orElse(false);
++
++        if (!isProductInStore) {
++            throw new IllegalArgumentException("Product is not available in the specified store.");
++        }
++
++        Purchase purchase = new Purchase();
++        purchase.setCustomer(customer);
++        purchase.setProduct(product);
++        purchase.setPurchaseDate(LocalDateTime.now()); // Set current purchase date
++
++        return convertToDto(purchaseRepository.save(purchase));
++    }
++
++    // Get all purchases by a specific customer
++    public List<PurchaseDTO> getPurchasesByCustomerId(Long customerId) {
++        if (!customerService.getCustomerEntityById(customerId).isPresent()) {
++            throw new RuntimeException("Customer not found with id " + customerId);
++        }
++        return purchaseRepository.findByCustomerId(customerId).stream()
++                .map(this::convertToDto)
++                .collect(Collectors.toList());
++    }
++
++    // Get purchases by customer sorted by date
++    public List<PurchaseDTO> getPurchasesByCustomerIdSortedByDate(Long customerId, String order) {
++        List<Purchase> purchases;
++        if ("asc".equalsIgnoreCase(order)) {
++            purchases = purchaseRepository.findByCustomerIdOrderByPurchaseDateAsc(customerId);
++        } else if ("desc".equalsIgnoreCase(order)) {
++            purchases = purchaseRepository.findByCustomerIdOrderByPurchaseDateDesc(customerId);
++        } else {
++            purchases = purchaseRepository.findByCustomerId(customerId); // Default to unsorted if order invalid
++        }
++        return purchases.stream()
++                .map(this::convertToDto)
++                .collect(Collectors.toList());
++    }
++
++    // TODO: Implement sorting by total sum if needed (requires more complex query/logic)
++
++    public void deletePurchase(Long id) {
++        if (!purchaseRepository.existsById(id)) {
++            throw new RuntimeException("Purchase not found with id " + id);
++        }
++        purchaseRepository.deleteById(id);
++    }
++}
+\ No newline at end of file
+Index: ProductService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ProductService.java b/ProductService.java
+new file mode 100644
+--- /dev/null	(date 1748434441692)
++++ b/ProductService.java	(date 1748434441692)
+@@ -0,0 +1,161 @@
++package com.onlineshops.yourprojectname.service;
++
++import com.onlineshops.yourprojectname.dto.ProductDTO;
++import com.onlineshops.yourprojectname.model.Category;
++import com.onlineshops.yourprojectname.model.Product;
++import com.onlineshops.yourprojectname.model.Store;
++import com.onlineshops.yourprojectname.repository.CategoryRepository;
++import com.onlineshops.yourprojectname.repository.ProductRepository;
++import com.onlineshops.yourprojectname.repository.StoreRepository;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++
++import java.util.List;
++import java.util.Optional;
++import java.util.stream.Collectors;
++
++@Service
++public class ProductService {
++    @Autowired
++    private ProductRepository productRepository;
++    @Autowired
++    private CategoryRepository categoryRepository;
++    @Autowired
++    private StoreRepository storeRepository;
++
++    // Convert Product entity to ProductDTO
++    private ProductDTO convertToDto(Product product) {
++        ProductDTO dto = new ProductDTO();
++        dto.setId(product.getId());
++        dto.setName(product.getName());
++        dto.setPrice(product.getPrice());
++        dto.setProducer(product.getProducer());
++        dto.setCountryOfOrigin(product.getCountryOfOrigin());
++        dto.setWeight(product.getWeight());
++        dto.setDescription(product.getDescription());
++        dto.setImageUrls(product.getImageUrls());
++        if (product.getCategory() != null) {
++            dto.setCategoryId(product.getCategory().getId());
++            dto.setCategoryName(product.getCategory().getName());
++        }
++        return dto;
++    }
++
++    // Convert ProductDTO to Product entity (for creation/update)
++    private Product convertToEntity(ProductDTO productDto) {
++        Product product = new Product();
++        product.setId(productDto.getId()); // ID will be null for new products
++        product.setName(productDto.getName());
++        product.setPrice(productDto.getPrice());
++        product.setProducer(productDto.getProducer());
++        product.setCountryOfOrigin(productDto.getCountryOfOrigin());
++        product.setWeight(productDto.getWeight());
++        product.setDescription(productDto.getDescription());
++        product.setImageUrls(productDto.getImageUrls());
++
++        if (productDto.getCategoryId() != null) {
++            Category category = categoryRepository.findById(productDto.getCategoryId())
++                    .orElseThrow(() -> new RuntimeException("Category not found with id " + productDto.getCategoryId()));
++            product.setCategory(category);
++        }
++        return product;
++    }
++
++    public List<ProductDTO> getAllProducts() {
++        return productRepository.findAll().stream()
++                .map(this::convertToDto)
++                .collect(Collectors.toList());
++    }
++
++    public Optional<ProductDTO> getProductById(Long id) {
++        return productRepository.findById(id)
++                .map(this::convertToDto);
++    }
++
++    public ProductDTO createProduct(ProductDTO productDto) {
++        Product product = convertToEntity(productDto);
++        return convertToDto(productRepository.save(product));
++    }
++
++    public ProductDTO updateProduct(Long id, ProductDTO productDetailsDto) {
++        Product existingProduct = productRepository.findById(id)
++                .orElseThrow(() -> new RuntimeException("Product not found with id " + id));
++
++        existingProduct.setName(productDetailsDto.getName());
++        existingProduct.setPrice(productDetailsDto.getPrice());
++        existingProduct.setProducer(productDetailsDto.getProducer());
++        existingProduct.setCountryOfOrigin(productDetailsDto.getCountryOfOrigin());
++        existingProduct.setWeight(productDetailsDto.getWeight());
++        existingProduct.setDescription(productDetailsDto.getDescription());
++        existingProduct.setImageUrls(productDetailsDto.getImageUrls());
++
++        if (productDetailsDto.getCategoryId() != null) {
++            Category category = categoryRepository.findById(productDetailsDto.getCategoryId())
++                    .orElseThrow(() -> new RuntimeException("Category not found with id " + productDetailsDto.getCategoryId()));
++            existingProduct.setCategory(category);
++        } else {
++            existingProduct.setCategory(null); // Allow removing category
++        }
++
++        return convertToDto(productRepository.save(existingProduct));
++    }
++
++    public void deleteProduct(Long id) {
++        if (!productRepository.existsById(id)) {
++            throw new RuntimeException("Product not found with id " + id);
++        }
++        productRepository.deleteById(id);
++    }
++
++    // Functional Requirements
++
++    // Get products by category
++    public List<ProductDTO> getProductsByCategoryId(Long categoryId) {
++        return productRepository.findByCategoryId(categoryId).stream()
++                .map(this::convertToDto)
++                .collect(Collectors.toList());
++    }
++
++    // Add product to a store
++    public Product addProductToStore(Long productId, Long storeId) {
++        Product product = productRepository.findById(productId)
++                .orElseThrow(() -> new RuntimeException("Product not found with id " + productId));
++        Store store = storeRepository.findById(storeId)
++                .orElseThrow(() -> new RuntimeException("Store not found with id " + storeId));
++
++        if (!store.getProducts().contains(product)) {
++            store.getProducts().add(product);
++            product.getStores().add(store); // Ensure bidirectional relationship is maintained
++            storeRepository.save(store); // Save the store to update the ManyToMany relationship
++        }
++        return product;
++    }
++
++    // Find all stores where a specific product is available
++    public List<Store> getStoresByProductId(Long productId) {
++        if (!productRepository.existsById(productId)) {
++            throw new RuntimeException("Product not found with id " + productId);
++        }
++        return storeRepository.findByProducts_Id(productId);
++    }
++
++    // Get products sorted by price
++    public List<ProductDTO> getProductsSortedByPrice(String order) {
++        List<Product> products;
++        if ("asc".equalsIgnoreCase(order)) {
++            products = productRepository.findByOrderByPriceAsc();
++        } else if ("desc".equalsIgnoreCase(order)) {
++            products = productRepository.findByOrderByPriceDesc();
++        } else {
++            products = productRepository.findAll(); // Default to unsorted
++        }
++        return products.stream()
++                .map(this::convertToDto)
++                .collect(Collectors.toList());
++    }
++
++    // Helper method to retrieve product entity (for other services)
++    public Optional<Product> getProductEntityById(Long id) {
++        return productRepository.findById(id);
++    }
++}
+\ No newline at end of file
+Index: CategoryController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CategoryController.java b/CategoryController.java
+new file mode 100644
+--- /dev/null	(date 1748434345379)
++++ b/CategoryController.java	(date 1748434345379)
+@@ -0,0 +1,62 @@
++package com.onlineshops.yourprojectname.controller;
++
++import com.onlineshops.yourprojectname.model.Category;
++import com.onlineshops.yourprojectname.service.CategoryService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/categories")
++@CrossOrigin(origins = "http://127.0.0.1:5500") // Allow requests from your frontend
++public class CategoryController {
++    @Autowired
++    private CategoryService categoryService;
++
++    @GetMapping
++    public List<Category> getAllCategories() {
++        return categoryService.getAllCategories();
++    }
++
++    @GetMapping("/{id}")
++    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
++        return categoryService.getCategoryById(id)
++                .map(ResponseEntity::ok)
++                .orElse(ResponseEntity.notFound().build());
++    }
++
++    @PostMapping
++    public ResponseEntity<?> createCategory(@RequestBody Category category) {
++        try {
++            Category createdCategory = categoryService.createCategory(category);
++            return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
++        } catch (IllegalArgumentException e) {
++            return ResponseEntity.badRequest().body(e.getMessage());
++        }
++    }
++
++    @PutMapping("/{id}")
++    public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
++        try {
++            Category updatedCategory = categoryService.updateCategory(id, categoryDetails);
++            return ResponseEntity.ok(updatedCategory);
++        } catch (RuntimeException e) {
++            return ResponseEntity.notFound().build();
++        } catch (IllegalArgumentException e) {
++            return ResponseEntity.badRequest().body(e.getMessage());
++        }
++    }
++
++    @DeleteMapping("/{id}")
++    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
++        try {
++            categoryService.deleteCategory(id);
++            return ResponseEntity.noContent().build();
++        } catch (RuntimeException e) {
++            return ResponseEntity.notFound().build();
++        }
++    }
++}
+\ No newline at end of file
+Index: StoreService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/StoreService.java b/StoreService.java
+new file mode 100644
+--- /dev/null	(date 1748434389888)
++++ b/StoreService.java	(date 1748434389888)
+@@ -0,0 +1,66 @@
++package com.onlineshops.yourprojectname.service;
++
++import com.onlineshops.yourprojectname.dto.StoreDTO;
++import com.onlineshops.yourprojectname.model.Product;
++import com.onlineshops.yourprojectname.model.Store;
++import com.onlineshops.yourprojectname.repository.StoreRepository;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++
++import java.util.List;
++import java.util.Optional;
++import java.util.stream.Collectors;
++
++@Service
++public class StoreService {
++    @Autowired
++    private StoreRepository storeRepository;
++
++    public List<StoreDTO> getAllStores() {
++        return storeRepository.findAll().stream()
++                .map(this::convertToDto)
++                .collect(Collectors.toList());
++    }
++
++    public Optional<StoreDTO> getStoreById(Long id) {
++        return storeRepository.findById(id)
++                .map(this::convertToDto);
++    }
++
++    public StoreDTO createStore(Store store) {
++        if (storeRepository.findByName(store.getName()).isPresent()) {
++            throw new IllegalArgumentException("Store with this name already exists.");
++        }
++        return convertToDto(storeRepository.save(store));
++    }
++
++    public StoreDTO updateStore(Long id, Store storeDetails) {
++        Store store = storeRepository.findById(id)
++                .orElseThrow(() -> new RuntimeException("Store not found with id " + id));
++
++        if (storeRepository.findByName(storeDetails.getName()).isPresent() &&
++                !storeRepository.findByName(storeDetails.getName()).get().getId().equals(id)) {
++            throw new IllegalArgumentException("Another store with this name already exists.");
++        }
++
++        store.setName(storeDetails.getName());
++        store.setLocation(storeDetails.getLocation());
++        return convertToDto(storeRepository.save(store));
++    }
++
++    public void deleteStore(Long id) {
++        if (!storeRepository.existsById(id)) {
++            throw new RuntimeException("Store not found with id " + id);
++        }
++        storeRepository.deleteById(id);
++    }
++
++    private StoreDTO convertToDto(Store store) {
++        return new StoreDTO(store.getId(), store.getName(), store.getLocation());
++    }
++
++    // Helper method to retrieve store entity (for other services)
++    public Optional<Store> getStoreEntityById(Long id) {
++        return storeRepository.findById(id);
++    }
++}
+\ No newline at end of file
+Index: JpaRepository
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/JpaRepository b/JpaRepository
+new file mode 100644
+--- /dev/null	(date 1748434660911)
++++ b/JpaRepository	(date 1748434660911)
+@@ -0,0 +1,44 @@
++package com.onlineshops.yourprojectname.repository;
++
++import com.onlineshops.yourprojectname.model.Category;
++import com.onlineshops.yourprojectname.model.Customer;
++import com.onlineshops.yourprojectname.model.Product;
++import com.onlineshops.yourprojectname.model.Purchase;
++import com.onlineshops.yourprojectname.model.Store;
++import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.stereotype.Repository;
++
++import java.util.List;
++import java.util.Optional;
++
++@Repository
++public interface CategoryRepository extends JpaRepository<Category, Long> {
++    Optional<Category> findByName(String name);
++}
++
++@Repository
++public interface CustomerRepository extends JpaRepository<Customer, Long> {
++    Optional<Customer> findByEmail(String email);
++}
++
++@Repository
++public interface ProductRepository extends JpaRepository<Product, Long> {
++    List<Product> findByCategoryId(Long categoryId);
++    List<Product> findByOrderByPriceAsc();
++    List<Product> findByOrderByPriceDesc();
++}
++
++@Repository
++public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
++    List<Purchase> findByCustomerId(Long customerId);
++    // You could add methods for sorting purchases by date or total sum if needed
++    List<Purchase> findByCustomerIdOrderByPurchaseDateAsc(Long customerId);
++    List<Purchase> findByCustomerIdOrderByPurchaseDateDesc(Long customerId);
++}
++
++@Repository
++public interface StoreRepository extends JpaRepository<Store, Long> {
++    Optional<Store> findByName(String name);
++    // Find stores that sell a specific product
++    List<Store> findByProducts_Id(Long productId);
++}
+\ No newline at end of file
+Index: StoreDTO.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/StoreDTO.java b/StoreDTO.java
+new file mode 100644
+--- /dev/null	(date 1748434681537)
++++ b/StoreDTO.java	(date 1748434681537)
+@@ -0,0 +1,14 @@
++package com.onlineshops.yourprojectname.dto;
++
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import lombok.AllArgsConstructor;
++
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++public class StoreDTO {
++    private Long id;
++    private String name;
++    private String location;
++}
+\ No newline at end of file
+Index: CustomerService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CustomerService.java b/CustomerService.java
+new file mode 100644
+--- /dev/null	(date 1748434465874)
++++ b/CustomerService.java	(date 1748434465874)
+@@ -0,0 +1,77 @@
++package com.onlineshops.yourprojectname.service;
++
++import com.onlineshops.yourprojectname.dto.CustomerDTO;
++import com.onlineshops.yourprojectname.model.Customer;
++import com.onlineshops.yourprojectname.repository.CustomerRepository;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++
++import java.util.List;
++import java.util.Optional;
++import java.util.stream.Collectors;
++
++@Service
++public class CustomerService {
++    @Autowired
++    private CustomerRepository customerRepository;
++
++    public List<CustomerDTO> getAllCustomers() {
++        return customerRepository.findAll().stream()
++                .map(this::convertToDto)
++                .collect(Collectors.toList());
++    }
++
++    public Optional<CustomerDTO> getCustomerById(Long id) {
++        return customerRepository.findById(id)
++                .map(this::convertToDto);
++    }
++
++    public CustomerDTO createCustomer(Customer customer) {
++        if (customerRepository.findByEmail(customer.getEmail()).isPresent()) {
++            throw new IllegalArgumentException("Customer with this email already exists.");
++        }
++        // In a real application, you'd hash the password here before saving
++        return convertToDto(customerRepository.save(customer));
++    }
++
++    public CustomerDTO updateCustomer(Long id, Customer customerDetails) {
++        Customer customer = customerRepository.findById(id)
++                .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
++
++        if (customerRepository.findByEmail(customerDetails.getEmail()).isPresent() &&
++                !customerRepository.findByEmail(customerDetails.getEmail()).get().getId().equals(id)) {
++            throw new IllegalArgumentException("Another customer with this email already exists.");
++        }
++
++        customer.setName(customerDetails.getName());
++        customer.setEmail(customerDetails.getEmail());
++        customer.setPhoneNumber(customerDetails.getPhoneNumber());
++        // Handle password update separately or with care, maybe dedicated endpoint
++        if (customerDetails.getPassword() != null && !customerDetails.getPassword().isEmpty()) {
++            customer.setPassword(customerDetails.getPassword()); // Hash this in real app!
++        }
++
++        return convertToDto(customerRepository.save(customer));
++    }
++
++    public void deleteCustomer(Long id) {
++        if (!customerRepository.existsById(id)) {
++            throw new RuntimeException("Customer not found with id " + id);
++        }
++        customerRepository.deleteById(id);
++    }
++
++    private CustomerDTO convertToDto(Customer customer) {
++        return new CustomerDTO(
++                customer.getId(),
++                customer.getName(),
++                customer.getEmail(),
++                customer.getPhoneNumber()
++        );
++    }
++
++    // Helper method to retrieve customer entity (for other services)
++    public Optional<Customer> getCustomerEntityById(Long id) {
++        return customerRepository.findById(id);
++    }
++}
+\ No newline at end of file
+Index: CategoryService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CategoryService.java b/CategoryService.java
+new file mode 100644
+--- /dev/null	(date 1748434490155)
++++ b/CategoryService.java	(date 1748434490155)
+@@ -0,0 +1,52 @@
++package com.onlineshops.yourprojectname.service;
++
++import com.onlineshops.yourprojectname.model.Category;
++import com.onlineshops.yourprojectname.repository.CategoryRepository;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++
++import java.util.List;
++import java.util.Optional;
++
++@Service
++public class CategoryService {
++    @Autowired
++    private CategoryRepository categoryRepository;
++
++    public List<Category> getAllCategories() {
++        return categoryRepository.findAll();
++    }
++
++    public Optional<Category> getCategoryById(Long id) {
++        return categoryRepository.findById(id);
++    }
++
++    public Category createCategory(Category category) {
++        // Optional: Add validation for unique name
++        if (categoryRepository.findByName(category.getName()).isPresent()) {
++            throw new IllegalArgumentException("Category with this name already exists.");
++        }
++        return categoryRepository.save(category);
++    }
++
++    public Category updateCategory(Long id, Category categoryDetails) {
++        Category category = categoryRepository.findById(id)
++                .orElseThrow(() -> new RuntimeException("Category not found with id " + id));
++
++        category.setName(categoryDetails.getName());
++        // Optional: Re-check unique name after update
++        Optional<Category> existingCategory = categoryRepository.findByName(categoryDetails.getName());
++        if (existingCategory.isPresent() && !existingCategory.get().getId().equals(id)) {
++            throw new IllegalArgumentException("Another category with this name already exists.");
++        }
++
++        return categoryRepository.save(category);
++    }
++
++    public void deleteCategory(Long id) {
++        if (!categoryRepository.existsById(id)) {
++            throw new RuntimeException("Category not found with id " + id);
++        }
++        categoryRepository.deleteById(id);
++    }
++}
+\ No newline at end of file
+Index: categoryName
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/categoryName b/categoryName
+new file mode 100644
+--- /dev/null	(date 1748434742863)
++++ b/categoryName	(date 1748434742863)
+@@ -0,0 +1,24 @@
++package com.onlineshops.yourprojectname.dto;
++
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import lombok.AllArgsConstructor;
++
++import java.math.BigDecimal;
++import java.util.List;
++
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++public class ProductDTO {
++    private Long id;
++    private String name;
++    private BigDecimal price;
++    private String producer;
++    private String countryOfOrigin;
++    private Double weight;
++    private String description;
++    private List<String> imageUrls;
++    private Long categoryId;
++    private String categoryName; // For display purposes
++}
+\ No newline at end of file
+Index: Purchase.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Purchase.java b/Purchase.java
+new file mode 100644
+--- /dev/null	(date 1748434808345)
++++ b/Purchase.java	(date 1748434808345)
+@@ -0,0 +1,29 @@
++package com.onlineshops.yourprojectname.model;
++
++import jakarta.persistence.*;
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import lombok.AllArgsConstructor;
++import java.time.LocalDateTime;
++
++@Entity
++@Table(name = "purchases")
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++public class Purchase {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Long id;
++
++    @ManyToOne(fetch = FetchType.LAZY)
++    @JoinColumn(name = "customer_id", nullable = false)
++    private Customer customer;
++
++    @ManyToOne(fetch = FetchType.LAZY)
++    @JoinColumn(name = "product_id", nullable = false)
++    private Product product;
++
++    @Column(nullable = false)
++    private LocalDateTime purchaseDate;
++}
+\ No newline at end of file
+Index: PurchaseDTO.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PurchaseDTO.java b/PurchaseDTO.java
+new file mode 100644
+--- /dev/null	(date 1748434702875)
++++ b/PurchaseDTO.java	(date 1748434702875)
+@@ -0,0 +1,21 @@
++package com.onlineshops.yourprojectname.dto;
++
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import lombok.AllArgsConstructor;
++
++import java.math.BigDecimal;
++import java.time.LocalDateTime;
++
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++public class PurchaseDTO {
++    private Long id;
++    private Long customerId;
++    private String customerName;
++    private Long productId;
++    private String productName;
++    private BigDecimal productPrice;
++    private LocalDateTime purchaseDate;
++}
+\ No newline at end of file
+Index: CustomerDTO.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CustomerDTO.java b/CustomerDTO.java
+new file mode 100644
+--- /dev/null	(date 1748434720869)
++++ b/CustomerDTO.java	(date 1748434720869)
+@@ -0,0 +1,18 @@
++package com.onlineshops.yourprojectname.dto;
++
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import lombok.AllArgsConstructor;
++
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++public class CustomerDTO {
++    private Long id;
++    private String name;
++    private String email;
++    private String phoneNumber;
++    // Password should NOT be in DTOs for GET requests.
++    // For POST/PUT, you might have a separate DTO or include it,
++    // but ensure it's hashed before saving.
++}
+\ No newline at end of file
+Index: Product.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Product.java b/Product.java
+new file mode 100644
+--- /dev/null	(date 1748434868766)
++++ b/Product.java	(date 1748434868766)
+@@ -0,0 +1,46 @@
++package com.onlineshops.yourprojectname.model;
++
++import jakarta.persistence.*;
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import lombok.AllArgsConstructor;
++import java.math.BigDecimal;
++import java.util.ArrayList;
++import java.util.List;
++
++@Entity
++@Table(name = "products")
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++public class Product {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Long id;
++
++    @Column(nullable = false)
++    private String name;
++
++    @Column(nullable = false, precision = 10, scale = 2)
++    private BigDecimal price;
++
++    private String producer;
++    private String countryOfOrigin;
++    private Double weight; // in kg or g
++    private String description;
++
++    @ElementCollection // Stores a collection of embeddable objects or basic types
++    @CollectionTable(name = "product_image_urls", joinColumns = @JoinColumn(name = "product_id"))
++    @Column(name = "image_url")
++    private List<String> imageUrls = new ArrayList<>();
++
++    @ManyToOne(fetch = FetchType.LAZY)
++    @JoinColumn(name = "category_id")
++    private Category category;
++
++    @ManyToMany(mappedBy = "products")
++    private List<Store> stores = new ArrayList<>();
++
++    // Not directly mapped here for ManyToMany through Purchase.
++    // Purchase entity handles the customer-product relationship.
++}
+\ No newline at end of file
+Index: Category.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Category.java b/Category.java
+new file mode 100644
+--- /dev/null	(date 1748434887557)
++++ b/Category.java	(date 1748434887557)
+@@ -0,0 +1,25 @@
++package com.onlineshops.yourprojectname.model;
++
++import jakarta.persistence.*;
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import lombok.AllArgsConstructor;
++
++import java.util.List;
++
++@Entity
++@Table(name = "categories")
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++public class Category {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Long id;
++
++    @Column(nullable = false, unique = true)
++    private String name;
++
++    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
++    private List<Product> products;
++}
+\ No newline at end of file
+Index: Customer.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Customer.java b/Customer.java
+new file mode 100644
+--- /dev/null	(date 1748434829701)
++++ b/Customer.java	(date 1748434829701)
+@@ -0,0 +1,34 @@
++package com.onlineshops.yourprojectname.model;
++
++import jakarta.persistence.*;
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import lombok.AllArgsConstructor;
++
++import java.util.List;
++
++@Entity
++@Table(name = "customers")
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++public class Customer {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Long id;
++
++    @Column(nullable = false)
++    private String name;
++
++    @Column(nullable = false, unique = true)
++    private String email;
++
++    @Column(nullable = true)
++    private String phoneNumber;
++
++    @Column(nullable = false)
++    private String password; // In a real app, hash this password!
++
++    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
++    private List<Purchase> purchases;
++}
+\ No newline at end of file
+Index: Store.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Store.java b/Store.java
+new file mode 100644
+--- /dev/null	(date 1748434852003)
++++ b/Store.java	(date 1748434852003)
+@@ -0,0 +1,34 @@
++package com.onlineshops.yourprojectname.model;
++
++import jakarta.persistence.*;
++import lombok.Data;
++import lombok.NoArgsConstructor;
++import lombok.AllArgsConstructor;
++
++import java.util.ArrayList;
++import java.util.List;
++
++@Entity
++@Table(name = "stores")
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++public class Store {
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    private Long id;
++
++    @Column(nullable = false, unique = true)
++    private String name;
++
++    @Column(nullable = false)
++    private String location;
++
++    @ManyToMany
++    @JoinTable(
++            name = "store_products",
++            joinColumns = @JoinColumn(name = "store_id"),
++            inverseJoinColumns = @JoinColumn(name = "product_id")
++    )
++    private List<Product> products = new ArrayList<>();
++}
+\ No newline at end of file
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pom.xml b/pom.xml
+new file mode 100644
+--- /dev/null	(date 1748434991498)
++++ b/pom.xml	(date 1748434991498)
+@@ -0,0 +1,65 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++    <parent>
++        <groupId>org.springframework.boot</groupId>
++        <artifactId>spring-boot-starter-parent</artifactId>
++        <version>3.2.5</version> <relativePath/> </parent>
++    <groupId>com.onlineshops</groupId>
++    <artifactId>online-shops</artifactId>
++    <version>0.0.1-SNAPSHOT</version>
++    <name>online-shops</name>
++    <description>Demo project for Spring Boot Online Shops</description>
++
++    <properties>
++        <java.version>17</java.version>
++    </properties>
++
++    <dependencies>
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-web</artifactId>
++        </dependency>
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-data-jpa</artifactId>
++        </dependency>
++        <dependency>
++            <groupId>org.postgresql</groupId>
++            <artifactId>postgresql</artifactId>
++            <scope>runtime</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.projectlombok</groupId>
++            <artifactId>lombok</artifactId>
++            <optional>true</optional>
++        </dependency>
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-validation</artifactId>
++        </dependency>
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-test</artifactId>
++            <scope>test</scope>
++        </dependency>
++    </dependencies>
++
++    <build>
++        <plugins>
++            <plugin>
++                <groupId>org.springframework.boot</groupId>
++                <artifactId>spring-boot-maven-plugin</artifactId>
++                <configuration>
++                    <excludes>
++                        <exclude>
++                            <groupId>org.projectlombok</groupId>
++                            <artifactId>lombok</artifactId>
++                        </exclude>
++                    </excludes>
++                </configuration>
++            </plugin>
++        </plugins>
++    </build>
++</project>
+\ No newline at end of file
+Index: OnlineShopsApplication.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/OnlineShopsApplication.java b/OnlineShopsApplication.java
+new file mode 100644
+--- /dev/null	(date 1748434929769)
++++ b/OnlineShopsApplication.java	(date 1748434929769)
+@@ -0,0 +1,12 @@
++package com.onlineshops.yourprojectname; // Change yourprojectname
++
++import org.springframework.boot.SpringApplication;
++import org.springframework.boot.autoconfigure.SpringBootApplication;
++
++@SpringBootApplication
++public class OnlineShopsApplication {
++
++    public static void main(String[] args) {
++        SpringApplication.run(OnlineShopsApplication.class, args);
++    }
++}
+\ No newline at end of file
+Index: application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/application.properties b/application.properties
+new file mode 100644
+--- /dev/null	(date 1748434964009)
++++ b/application.properties	(date 1748434964009)
+@@ -0,0 +1,22 @@
++server.port=8080
++
++spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
++spring.datasource.username=postgres
++spring.datasource.password=newpaswordhorse
++
++spring.jpa.database=POSTGRESQL
++spring.jpa.show-sql=true
++spring.jpa.properties.hibernate.format_sql=true
++spring.jpa.hibernate.ddl-auto=update
++spring.jpa.open-in-view=false # Good practice to avoid N+1 issues in web layer
++
++# For H2 in-memory database (useful for development/testing if you don't want PostgreSQL running)
++# spring.h2.console.enabled=true
++# spring.datasource.url=jdbc:h2:mem:onlineshopsdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
++# spring.datasource.driverClassName=org.h2.Driver
++# spring.datasource.username=sa
++# spring.datasource.password=
++
++# SQL initialization (for initial data loading from data.sql)
++spring.sql.init.mode=always
++spring.sql.init.platform=postgres
+\ No newline at end of file
+Index: pr.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pr.html b/pr.html
+new file mode 100644
+--- /dev/null	(date 1748497055527)
++++ b/pr.html	(date 1748497055527)
+@@ -0,0 +1,52 @@
++<!DOCTYPE html>
++<html lang="uk">
++<head>
++    <meta charset="UTF-8">
++    <title>Вибір категорії та країни</title>
++</head>
++<body>
++
++<label for="category">Категорія:</label>
++<select id="category" onchange="updateImages()">
++    <option value="">-- Виберіть категорію --</option>
++    <option value="food">Їжа</option>
++    <option value="electronics">Електроніка</option>
++    <option value="clothing">Одяг</option>
++</select>
++
++<label for="country">Країна:</label>
++<select id="country" onchange="updateImages()">
++    <option value="">-- Виберіть країну --</option>
++    <option value="ukraine">Україна</option>
++    <option value="germany">Німеччина</option>
++    <option value="japan">Японія</option>
++</select>
++
++<br><br>
++
++<div id="imageContainer"></div>
++
++<script>
++    function updateImages() {
++        const category = document.getElementById('category').value;
++        const country = document.getElementById('country').value;
++        const container = document.getElementById('imageContainer');
++
++        container.innerHTML = ""; // Очистити попередні зображення
++
++        if (category && country) {
++            const imageCount = 3; // Кількість зображень для показу
++            for (let i = 1; i <= imageCount; i++) {
++                const img = document.createElement('img');
++                img.src = `images/${category}_${country}_${i}.jpg`;
++                img.alt = `${category} ${country} ${i}`;
++                img.width = 200;
++                img.style.marginRight = "10px";
++                container.appendChild(img);
++            }
++        }
++    }
++</script>
++
++</body>
++</html>
+Index: pr.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pr.js b/pr.js
+new file mode 100644
+--- /dev/null	(date 1748445887792)
++++ b/pr.js	(date 1748445887792)
+@@ -0,0 +1,17 @@
++<script>
++function updateImage() {
++  const category = document.getElementById("category").value;
++  const country = document.getElementById("country").value;
++  const image = document.getElementById("previewImage");
++
++  if (!category || !country) {
++    image.src = "";
++    return;
++  }
++
++  // Шлях до зображення (можете змінити під свою структуру)
++  const imagePath = `images/${category}_${country}.jpg`; // приклад: images/electronics_japan.jpg
++
++  image.src = imagePath;
++}
++</script>
+\ No newline at end of file
+Index: server.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server.js b/server.js
+new file mode 100644
+--- /dev/null	(date 1748516375701)
++++ b/server.js	(date 1748516375701)
+@@ -0,0 +1,58 @@
++const express = require('express');
++const cors = require('cors'); // Install: npm install cors
++const app = express();
++const PORT = 3000;
++
++app.use(cors()); // Enable CORS for your frontend
++app.use(express.json()); // To parse JSON request bodies
++
++// --- Mock Data (Replace with a real database in production) ---
++let products = [
++    { id: 'p1', name: 'Смартфон X', price: 10000, manufacturer: 'TechCorp', origin: 'Китай', categoryId: 'c1' },
++    { id: 'p2', name: 'Футболка бавовняна', price: 500, manufacturer: 'FashionCo', origin: 'Туреччина', categoryId: 'c2' },
++    { id: 'p3', name: 'Кава Арабіка 250г', price: 250, manufacturer: 'CoffeeBeans', origin: 'Бразилія', categoryId: 'c3' },
++    { id: 'p4', name: 'Ноутбук Pro', price: 25000, manufacturer: 'CompMaster', origin: 'США', categoryId: 'c1' }
++];
++
++let categories = [
++    { id: 'c1', name: 'Електроніка' },
++    { id: 'c2', name: 'Одяг' },
++    { id: 'c3', name: 'Продукти харчування' }
++];
++// --- End Mock Data ---
++
++// API Endpoint for Categories
++app.get('/api/categories', (req, res) => {
++    res.json(categories);
++});
++
++// API Endpoint for Products
++app.get('/api/products', (req, res) => {
++    const categoryFilter = req.query.category;
++    let filteredProducts = products;
++    if (categoryFilter && categoryFilter !== 'all') {
++        filteredProducts = products.filter(p => p.categoryId === categoryFilter);
++    }
++    res.json(filteredProducts);
++});
++
++app.post('/api/products', (req, res) => {
++    const { name, price, manufacturer, origin, categoryId } = req.body;
++    if (!name || !price || !manufacturer || !origin || !categoryId) {
++        return res.status(400).json({ message: 'All fields are required.' });
++    }
++    const newProduct = {
++        id: `p${products.length + 1}`, // Simple ID generation
++        name,
++        price,
++        manufacturer,
++        origin,
++        categoryId
++    };
++    products.push(newProduct);
++    res.status(201).json(newProduct);
++});
++
++app.listen(PORT, () => {
++    console.log(`Server running on http://localhost:${PORT}`);
++});
+\ No newline at end of file
+Index: script.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/script.js b/script.js
+new file mode 100644
+--- /dev/null	(date 1748516851268)
++++ b/script.js	(date 1748516851268)
+@@ -0,0 +1,534 @@
++const contentDiv = document.getElementById('content');
++
++// Function to load and display the products section
++function showProductsWithFilter() {
++    fetch('products.html')
++        .then(response => {
++            if (!response.ok) {
++                throw new Error(`HTTP error! status: ${response.status}`);
++            }
++            return response.text();
++        })
++        .then(html => {
++            contentDiv.innerHTML = html;
++
++            // Initialize product-related functionalities after content is loaded
++            fetchCategoriesForProductFilterDropdown(); // Populate category filter dropdown
++            fetchCategoriesForProductFormDropdownNew(); // Populate category dropdown in product form
++
++            const productAddEditForm = document.getElementById('product-add-edit-form');
++            if (productAddEditForm) {
++                productAddEditForm.addEventListener('submit', handleAddProductNew);
++            } else {
++                console.error("Елемент 'product-add-edit-form' не знайдено в products.html. Перевірте ID форми.");
++            }
++
++            fetchProductsNew(); // Load initial product list
++        })
++        .catch(error => {
++            console.error('Помилка завантаження products.html:', error);
++            contentDiv.innerHTML = `<p>Не вдалося завантажити сторінку продуктів. Будь ласка, спробуйте ще раз.</p>`;
++        });
++}
++
++// Function to load and display the customers section
++function showCustomers() {
++    fetch('customers.html')
++        .then(response => response.text())
++        .then(html => {
++            contentDiv.innerHTML = html;
++            fetchCustomers(); // Load initial customer list
++            const addCustomerForm = document.getElementById('add-customer-form');
++            if (addCustomerForm) {
++                addCustomerForm.addEventListener('submit', handleAddCustomer);
++            }
++        });
++}
++
++// Function to load and display the categories section
++function showCategories() {
++    fetch('categories.html')
++        .then(response => response.text())
++        .then(html => {
++            contentDiv.innerHTML = html;
++            fetchCategories(); // Load initial category list
++            const addCategoryForm = document.getElementById('add-category-form');
++            if (addCategoryForm) {
++                addCategoryForm.addEventListener('submit', handleAddCategory);
++            }
++        });
++}
++
++// =====================================================================================================================
++// PRODUCT FUNCTIONS
++// =====================================================================================================================
++
++// Shows the add/edit product form
++function showAddProductFormNew() {
++    const addProductFormContainer = document.getElementById('add-product-form');
++    const productAddEditForm = document.getElementById('product-add-edit-form');
++
++    if (addProductFormContainer && productAddEditForm) {
++        addProductFormContainer.style.display = 'block';
++        productAddEditForm.style.display = 'block';
++
++        // Clear form and set title for new product, if ID is empty
++        if (document.getElementById('id').value === '') {
++            productAddEditForm.reset();
++            document.getElementById('id').value = '';
++            const imageUrlsInput = document.getElementById('imageUrls');
++            if (imageUrlsInput) imageUrlsInput.value = '';
++            productAddEditForm.querySelector('h2').textContent = 'Додати новий продукт';
++        }
++
++        fetchCategoriesForProductFormDropdownNew(); // Always load categories for the dropdown
++    } else {
++        console.error("Елемент 'add-product-form' або 'product-add-edit-form' не знайдено. Перевірте, чи є він у products.html.");
++    }
++}
++
++// Loads product data into the form for editing
++async function handleEditProductNew(productId) {
++    try {
++        const response = await fetch(`/api/products/dto/${productId}`);
++        if (!response.ok) {
++            throw new Error(`Помилка завантаження продукту для редагування: ${response.status} ${response.statusText}`);
++        }
++        const product = await response.json();
++
++        // Populate form fields
++        document.getElementById('id').value = product.id;
++        document.getElementById('name').value = product.name;
++        document.getElementById('price').value = product.price;
++        document.getElementById('producer').value = product.producer;
++        document.getElementById('countryOfOrigin').value = product.countryOfOrigin || '';
++        document.getElementById('weight').value = product.weight;
++        document.getElementById('description').value = product.description;
++
++        // Set category dropdown
++        const categorySelect = document.getElementById('category');
++        await fetchCategoriesForProductFormDropdownNew(); // Ensure categories are loaded
++        if (product.categoryId) {
++            categorySelect.value = product.categoryId;
++        } else {
++            categorySelect.value = '';
++        }
++
++        // Set image URLs
++        const imageUrlsInput = document.getElementById('imageUrls');
++        if (product.imageUrls && product.imageUrls.length > 0) {
++            imageUrlsInput.value = product.imageUrls.join(', ');
++        } else {
++            imageUrlsInput.value = '';
++        }
++
++        // Change form title
++        document.getElementById('product-add-edit-form').querySelector('h2').textContent = `Редагувати продукт: ${product.name}`;
++
++        showAddProductFormNew(); // Display the form
++    } catch (error) {
++        console.error('Помилка при завантаженні продукту для редагування:', error);
++        alert('Не вдалося завантажити продукт для редагування: ' + error.message);
++    }
++}
++
++// Hides the add/edit product form and resets it
++function cancelAddProductNew() {
++    const addProductFormContainer = document.getElementById('add-product-form');
++    const productAddEditForm = document.getElementById('product-add-edit-form');
++    if (addProductFormContainer && productAddEditForm) {
++        addProductFormContainer.style.display = 'none';
++        productAddEditForm.reset();
++        const categorySelect = document.getElementById('category');
++        if (categorySelect) categorySelect.value = '';
++        const imageUrlsInput = document.getElementById('imageUrls');
++        if (imageUrlsInput) imageUrlsInput.value = '';
++        document.getElementById('id').value = ''; // Clear hidden ID
++    }
++}
++
++// Fetches categories to populate the product filter dropdown
++async function fetchCategoriesForProductFilterDropdown() {
++    try {
++        const response = await fetch('/api/categories');
++        const categories = await response.json();
++        const categoryFilterSelect = document.getElementById('category-filter');
++
++        categoryFilterSelect.innerHTML = '<option value="">Усі категорії</option>';
++
++        categories.forEach(category => {
++            const option = document.createElement('option');
++            option.value = category.id;
++            option.textContent = category.name;
++            categoryFilterSelect.appendChild(option);
++        });
++    } catch (error) {
++        console.error('Помилка завантаження категорій для фільтра:', error);
++    }
++}
++
++// Fetches categories to populate the dropdown in the product add/edit form
++async function fetchCategoriesForProductFormDropdownNew() {
++    try {
++        const response = await fetch('/api/categories');
++        const categories = await response.json();
++        const categorySelect = document.getElementById('category');
++
++        categorySelect.innerHTML = '<option value="">-- Виберіть категорію --</option>';
++
++        categories.forEach(category => {
++            const option = document.createElement('option');
++            option.value = category.id;
++            option.textContent = category.name;
++            categorySelect.appendChild(option);
++        });
++    } catch (error) {
++        console.error('Помилка завантаження категорій для форми продукту:', error);
++    }
++}
++
++// Fetches and displays products, with optional category filtering
++async function fetchProductsNew(categoryId = null) {
++    try {
++        let url = '/api/products/dto';
++        if (categoryId) {
++            url = `/api/products/category/${categoryId}`;
++        }
++
++        const response = await fetch(url);
++        if (!response.ok) {
++            const errorText = await response.text();
++            throw new Error(`Помилка завантаження продуктів: ${response.status} ${response.statusText} - ${errorText}`);
++        }
++        const products = await response.json();
++        let productListHTML = '<ul>';
++        if (products.length === 0) {
++            productListHTML += '<p>Немає продуктів у цій категорії або список порожній.</p>';
++        } else {
++            products.forEach(product => {
++                const imageUrl = (product.imageUrls && product.imageUrls.length > 0) ? product.imageUrls[0] : 'https://via.placeholder.com/50x50?text=No+Image';
++                productListHTML += `
++                    <li>
++                        <img src="${imageUrl}" alt="${product.name}" style="width:50px; height:50px; object-fit:cover; margin-right:10px;">
++                        ${product.name} (${product.categoryName ? product.categoryName : 'Без категорії'}) - ${product.price} грн
++                        <button onclick="handleEditProductNew(${product.id})">Редагувати</button>
++                        <button onclick="handleDeleteProductNew(${product.id})">Видалити</button>
++                    </li>`;
++            });
++        }
++        productListHTML += '</ul>';
++        const productListDiv = document.getElementById('product-list');
++        if (productListDiv) {
++            productListDiv.innerHTML = productListHTML;
++        } else {
++            console.error("Елемент 'product-list' не знайдено в products.html. Перевірте ID.");
++        }
++    } catch (error) {
++        console.error(`Помилка завантаження продуктів: ${error.message}`);
++        const productListDiv = document.getElementById('product-list');
++        if (productListDiv) {
++            productListDiv.innerHTML = `<p>Не вдалося завантажити продукти: ${error.message}</p>`;
++        }
++    }
++}
++
++// Filters products based on the selected category
++function filterProductsByCategory() {
++    const categoryFilterSelect = document.getElementById('category-filter');
++    const selectedCategoryId = categoryFilterSelect.value;
++
++    if (selectedCategoryId === "") {
++        fetchProductsNew(); // Fetch all products if "All Categories" is selected
++    } else {
++        fetchProductsNew(selectedCategoryId); // Fetch products by selected category
++    }
++}
++
++// Handles adding or updating a product
++async function handleAddProductNew(event) {
++    event.preventDefault();
++
++    const form = event.target;
++    const formData = new FormData(form);
++    const productData = {};
++
++    for (const [key, value] of formData.entries()) {
++        productData[key] = value;
++    }
++
++    productData.price = parseFloat(productData.price);
++    productData.weight = parseFloat(productData.weight);
++
++    const categoryId = productData.category;
++    if (categoryId) {
++        productData.categoryId = parseInt(categoryId);
++        delete productData.category;
++    } else {
++        productData.categoryId = null;
++        delete productData.category;
++    }
++
++    const imageUrlsInput = document.getElementById('imageUrls').value;
++    if (imageUrlsInput) {
++        productData.imageUrls = imageUrlsInput.split(',').map(url => url.trim()).filter(url => url !== '');
++    } else {
++        productData.imageUrls = [];
++    }
++
++    const productId = productData.id;
++    const method = productId ? 'PUT' : 'POST';
++    const url = productId ? `/api/products/dto/${productId}` : '/api/products/dto';
++
++    try {
++        const response = await fetch(url, {
++            method: method,
++            headers: {
++                'Content-Type': 'application/json'
++            },
++            body: JSON.stringify(productData)
++        });
++
++        if (!response.ok) {
++            const errorText = await response.text();
++            throw new Error(`Помилка збереження продукту: ${response.status} ${response.statusText} - ${errorText}`);
++        }
++
++        form.reset();
++        cancelAddProductNew(); // Hide and reset the form
++        fetchProductsNew(); // Refresh product list
++        alert('Продукт успішно збережено!');
++    } catch (error) {
++        console.error('Помилка збереження продукту:', error);
++        alert('Не вдалося зберегти продукт: ' + error.message);
++    }
++}
++
++// Handles deleting a product
++async function handleDeleteProductNew(productId) {
++    if (!confirm('Ви впевнені, що хочете видалити цей продукт?')) {
++        return;
++    }
++
++    try {
++        const response = await fetch(`/api/products/${productId}`, {
++            method: 'DELETE'
++        });
++
++        if (!response.ok) {
++            const errorText = await response.text();
++            throw new Error(`Помилка видалення продукту: ${response.status} ${response.statusText} - ${errorText}`);
++        }
++
++        alert('Продукт успішно видалено!');
++        fetchProductsNew(); // Refresh product list
++    } catch (error) {
++        console.error('Помилка видалення продукту:', error);
++        alert('Не вдалося видалити продукт: ' + error.message);
++    }
++}
++
++
++// =====================================================================================================================
++// CUSTOMER FUNCTIONS
++// =====================================================================================================================
++
++// Shows the add customer form
++function showAddCustomerForm() {
++    const addCustomerForm = document.getElementById('add-customer-form');
++    if (addCustomerForm) {
++        addCustomerForm.style.display = 'block';
++        addCustomerForm.reset(); // Clear form on display for new customer
++    }
++}
++
++// Fetches and displays customers
++async function fetchCustomers() {
++    try {
++        const response = await fetch('/api/customers');
++        const customers = await response.json();
++        let customerListHTML = '<ul>';
++        if (customers.length === 0) {
++            customerListHTML += '<p>Немає клієнтів.</p>';
++        } else {
++            customers.forEach(customer => {
++                customerListHTML += `<li>${customer.name} (${customer.email}) <button onclick="handleDeleteCustomer(${customer.id})">Видалити</button></li>`;
++            });
++        }
++        customerListHTML += '</ul>';
++        const customerListDiv = document.getElementById('customer-list');
++        if (customerListDiv) {
++            customerListDiv.innerHTML = customerListHTML;
++        }
++    } catch (error) {
++        console.error('Помилка при завантаженні клієнтів:', error);
++        const customerListDiv = document.getElementById('customer-list');
++        if (customerListDiv) {
++            customerListDiv.innerHTML = `<p>Не вдалося завантажити клієнтів: ${error.message}</p>`;
++        }
++    }
++}
++
++// Handles adding a new customer
++async function handleAddCustomer(event) {
++    event.preventDefault();
++    const form = event.target;
++    const formData = new FormData(form);
++    const customerData = Object.fromEntries(formData.entries());
++
++    try {
++        const response = await fetch('/api/customers', {
++            method: 'POST',
++            headers: {
++                'Content-Type': 'application/json',
++            },
++            body: JSON.stringify(customerData),
++        });
++
++        if (response.ok) {
++            fetchCustomers(); // Refresh customer list
++            form.reset();
++            form.style.display = 'none'; // Hide the form after successful submission
++            alert('Клієнт успішно доданий!');
++        } else {
++            const errorText = await response.text();
++            console.error('Помилка при додаванні клієнта:', response.statusText, errorText);
++            alert(`Не вдалося додати клієнта: ${errorText}`);
++        }
++    } catch (error) {
++        console.error('Помилка:', error);
++        alert('Виникла помилка при додаванні клієнта.');
++    }
++}
++
++// Handles deleting a customer
++async function handleDeleteCustomer(id) {
++    if (confirm('Ви впевнені, що хочете видалити цього клієнта?')) {
++        try {
++            const response = await fetch(`/api/customers/${id}`, {
++                method: 'DELETE',
++            });
++
++            if (response.ok) {
++                fetchCustomers(); // Refresh customer list
++                alert('Клієнт успішно видалений!');
++            } else {
++                const errorText = await response.text();
++                console.error('Помилка при видаленні клієнта:', response.statusText, errorText);
++                alert(`Не вдалося видалити клієнта: ${errorText}`);
++            }
++        } catch (error) {
++            console.error('Помилка:', error);
++            alert('Виникла помилка при видаленні клієнта.');
++        }
++    }
++}
++
++
++// =====================================================================================================================
++// CATEGORY FUNCTIONS
++// =====================================================================================================================
++
++// Shows the add category form
++function showAddCategoryForm() {
++    const addCategoryForm = document.getElementById('add-category-form');
++    if (addCategoryForm) {
++        addCategoryForm.style.display = 'block';
++        addCategoryForm.reset(); // Clear form on display for new category
++    }
++}
++
++// Fetches and displays categories
++async function fetchCategories() {
++    try {
++        const response = await fetch('/api/categories');
++        const categories = await response.json();
++        let categoryListHTML = '<ul>';
++        if (categories.length === 0) {
++            categoryListHTML += '<p>Немає категорій.</p>';
++        } else {
++            categories.forEach(category => {
++                categoryListHTML += `<li>${category.name} <button onclick="handleDeleteCategory(${category.id})">Видалити</button></li>`;
++            });
++        }
++        categoryListHTML += '</ul>';
++        const categoryListDiv = document.getElementById('category-list');
++        if (categoryListDiv) {
++            categoryListDiv.innerHTML = categoryListHTML;
++        }
++    } catch (error) {
++        console.error('Помилка при завантаженні категорій:', error);
++        const categoryListDiv = document.getElementById('category-list');
++        if (categoryListDiv) {
++            categoryListDiv.innerHTML = `<p>Не вдалося завантажити категорії: ${error.message}</p>`;
++        }
++    }
++}
++
++// Handles adding a new category
++async function handleAddCategory(event) {
++    event.preventDefault();
++    const form = event.target;
++    const formData = new FormData(form);
++    const categoryData = Object.fromEntries(formData.entries());
++
++    try {
++        const response = await fetch('/api/categories', {
++            method: 'POST',
++            headers: {
++                'Content-Type': 'application/json',
++            },
++            body: JSON.stringify(categoryData),
++        });
++
++        if (response.ok) {
++            fetchCategories(); // Refresh category list
++            form.reset();
++            form.style.display = 'none'; // Hide the form after successful submission
++            alert('Категорія успішно додана!');
++        } else {
++            const errorText = await response.text();
++            console.error('Помилка при додаванні категорії:', response.statusText, errorText);
++            alert(`Не вдалося додати категорію: ${errorText}`);
++        }
++    } catch (error) {
++        console.error('Помилка:', error);
++        alert('Виникла помилка при додаванні категорії.');
++    }
++}
++
++// Handles deleting a category
++async function handleDeleteCategory(id) {
++    if (confirm('Ви впевнені, що хочете видалити цю категорію?')) {
++        try {
++            const response = await fetch(`/api/categories/${id}`, {
++                method: 'DELETE',
++            });
++
++            if (response.ok) {
++                fetchCategories(); // Refresh category list
++                alert('Категорія успішно видалена!');
++            } else {
++                const errorText = await response.text();
++                console.error('Помилка при видаленні категорії:', response.statusText, errorText);
++                alert(`Не вдалося видалити категорію: ${errorText}`);
++            }
++        } catch (error) {
++            console.error('Помилка:', error);
++            alert('Виникла помилка при видаленні категорії.');
++        }
++    }
++}
++
++// Initialize the product page with filter on load
++window.onload = showProductsWithFilter;
++
++
++
++
++
++
++ 
++ 
++ 
++ 
++ 
+\ No newline at end of file
+Index: index.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/index.html b/index.html
+new file mode 100644
+--- /dev/null	(date 1748518385558)
++++ b/index.html	(date 1748518385558)
+@@ -0,0 +1,31 @@
++<!DOCTYPE html>
++<html lang="uk">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Керування</title>
++    <link rel="stylesheet" href="styles.css">
++</head>
++<body>
++<nav id="main-nav">
++    <button onclick="showProducts()">Продукти</button>
++    <button onclick="showCustomers()">Клієнти</button>
++    <button onclick="showCategories()">Категорії</button>
++</nav>
++<div id="content">
++    <h1>Продукти</h1>
++    <div id="product-list">
++    </div>
++    <button onclick="showAddProductForm()">Додати продукт</button>
++    <div id="add-product-form" style="display:none;">
++    </div>
++</div>
++
++<script src="script.js"></script>
++</body>
++</html>
++
++
++
++
++
+Index: products.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/products.html b/products.html
+new file mode 100644
+--- /dev/null	(date 1748432614412)
++++ b/products.html	(date 1748432614412)
+@@ -0,0 +1,50 @@
++<h1>Продукти</h1>
++
++<div class="filter-section">
++    <label for="category-filter">Фільтрувати за категорією:</label>
++    <select id="category-filter" name="category-filter" onchange="filterProductsByCategory()">
++        <option value="">Усі категорії</option>
++    </select>
++</div>
++
++<div id="product-list">
++</div>
++
++<button onclick="showAddProductFormNew()">Додати продукт</button>
++<button onclick="fetchProductsNew()">Оновити список продуктів</button>
++
++<div id="add-product-form" style="display:none;">
++    <h2>Додати новий продукт</h2>
++    <form id="product-add-edit-form">
++        <input type="hidden" id="id" name="id">
++
++        <label for="name">Назва:</label><br>
++        <input type="text" id="name" name="name" required><br>
++
++        <label for="price">Ціна:</label><br>
++        <input type="number" id="price" name="price" step="0.01" required><br>
++
++        <label for="producer">Виробник:</label><br>
++        <input type="text" id="producer" name="producer"><br>
++
++        <label for="countryOfOrigin">Країна походження:</label><br>
++        <input type="text" id="countryOfOrigin" name="countryOfOrigin"><br>
++
++        <label for="weight">Вага:</label><br>
++        <input type="number" id="weight" name="weight" step="0.01"><br>
++
++        <label for="description">Опис:</label><br>
++        <textarea id="description" name="description"></textarea><br>
++
++        <label for="category">Категорія:</label><br>
++        <select id="category" name="category" required>
++            <option value="">-- Виберіть категорію --</option>
++        </select><br><br>
++
++        <label for="imageUrls">Посилання на зображення (через кому):</label><br>
++        <input type="text" id="imageUrls" name="imageUrls"><br><br>
++
++        <button type="submit">Зберегти продукт</button>
++        <button type="button" onclick="cancelAddProductNew()">Скасувати</button>
++    </form>
++</div>
+\ No newline at end of file
+diff --git a/static b/static
+new file mode 100644

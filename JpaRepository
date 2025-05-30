@@ -1,0 +1,44 @@
+package com.onlineshops.yourprojectname.repository;
+
+import com.onlineshops.yourprojectname.model.Category;
+import com.onlineshops.yourprojectname.model.Customer;
+import com.onlineshops.yourprojectname.model.Product;
+import com.onlineshops.yourprojectname.model.Purchase;
+import com.onlineshops.yourprojectname.model.Store;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface CategoryRepository extends JpaRepository<Category, Long> {
+    Optional<Category> findByName(String name);
+}
+
+@Repository
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    Optional<Customer> findByEmail(String email);
+}
+
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long> {
+    List<Product> findByCategoryId(Long categoryId);
+    List<Product> findByOrderByPriceAsc();
+    List<Product> findByOrderByPriceDesc();
+}
+
+@Repository
+public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
+    List<Purchase> findByCustomerId(Long customerId);
+    // You could add methods for sorting purchases by date or total sum if needed
+    List<Purchase> findByCustomerIdOrderByPurchaseDateAsc(Long customerId);
+    List<Purchase> findByCustomerIdOrderByPurchaseDateDesc(Long customerId);
+}
+
+@Repository
+public interface StoreRepository extends JpaRepository<Store, Long> {
+    Optional<Store> findByName(String name);
+    // Find stores that sell a specific product
+    List<Store> findByProducts_Id(Long productId);
+}

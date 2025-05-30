@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Вибір категорії та країни</title>
+</head>
+<body>
+
+<label for="category">Категорія:</label>
+<select id="category" onchange="updateImages()">
+    <option value="">-- Виберіть категорію --</option>
+    <option value="food">Їжа</option>
+    <option value="electronics">Електроніка</option>
+    <option value="clothing">Одяг</option>
+</select>
+
+<label for="country">Країна:</label>
+<select id="country" onchange="updateImages()">
+    <option value="">-- Виберіть країну --</option>
+    <option value="ukraine">Україна</option>
+    <option value="germany">Німеччина</option>
+    <option value="japan">Японія</option>
+</select>
+
+<br><br>
+
+<div id="imageContainer"></div>
+
+<script>
+    function updateImages() {
+        const category = document.getElementById('category').value;
+        const country = document.getElementById('country').value;
+        const container = document.getElementById('imageContainer');
+
+        container.innerHTML = ""; // Очистити попередні зображення
+
+        if (category && country) {
+            const imageCount = 3; // Кількість зображень для показу
+            for (let i = 1; i <= imageCount; i++) {
+                const img = document.createElement('img');
+                img.src = `images/${category}_${country}_${i}.jpg`;
+                img.alt = `${category} ${country} ${i}`;
+                img.width = 200;
+                img.style.marginRight = "10px";
+                container.appendChild(img);
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

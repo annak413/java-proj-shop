@@ -1,0 +1,50 @@
+<h1>Продукти</h1>
+
+<div class="filter-section">
+    <label for="category-filter">Фільтрувати за категорією:</label>
+    <select id="category-filter" name="category-filter" onchange="filterProductsByCategory()">
+        <option value="">Усі категорії</option>
+    </select>
+</div>
+
+<div id="product-list">
+</div>
+
+<button onclick="showAddProductFormNew()">Додати продукт</button>
+<button onclick="fetchProductsNew()">Оновити список продуктів</button>
+
+<div id="add-product-form" style="display:none;">
+    <h2>Додати новий продукт</h2>
+    <form id="product-add-edit-form">
+        <input type="hidden" id="id" name="id">
+
+        <label for="name">Назва:</label><br>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="price">Ціна:</label><br>
+        <input type="number" id="price" name="price" step="0.01" required><br>
+
+        <label for="producer">Виробник:</label><br>
+        <input type="text" id="producer" name="producer"><br>
+
+        <label for="countryOfOrigin">Країна походження:</label><br>
+        <input type="text" id="countryOfOrigin" name="countryOfOrigin"><br>
+
+        <label for="weight">Вага:</label><br>
+        <input type="number" id="weight" name="weight" step="0.01"><br>
+
+        <label for="description">Опис:</label><br>
+        <textarea id="description" name="description"></textarea><br>
+
+        <label for="category">Категорія:</label><br>
+        <select id="category" name="category" required>
+            <option value="">-- Виберіть категорію --</option>
+        </select><br><br>
+
+        <label for="imageUrls">Посилання на зображення (через кому):</label><br>
+        <input type="text" id="imageUrls" name="imageUrls"><br><br>
+
+        <button type="submit">Зберегти продукт</button>
+        <button type="button" onclick="cancelAddProductNew()">Скасувати</button>
+    </form>
+</div>

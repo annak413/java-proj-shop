@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Керування Продуктами та Клієнтами</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Імпортуємо шрифт Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        /* Застосовуємо шрифт до всього тіла документа */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Загальні стилі для кнопок (додатково до Tailwind) */
+        button {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Стилі для карток продуктів */
+        .product-card, .customer-card { /* Застосовуємо до обох типів карток */
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            padding: 1.5rem; /* p-6 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative; /* Додано для позиціонування кнопки видалення */
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: 150px; /* Фіксована висота для зображень */
+            object-fit: contain; /* Зберігаємо співвідношення сторін, вміщуючи зображення */
+            border-radius: 0.5rem; /* rounded-md */
+            margin-bottom: 1rem; /* mb-4 */
+            background-color: #f0f0f0; /* Фоновий колір для порожніх зображень */
+        }
+
+        .product-card h3, .customer-card h3 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            color: #374151; /* text-gray-700 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+
+        .product-card p, .customer-card p {
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* text-gray-600 */
+            margin-bottom: 0.25rem; /* mb-1 */
+        }
+
+        /* Стилі для форм */
+        #product-form label, #customer-form label {
+            font-weight: 600; /* font-semibold */
+            color: #374151; /* text-gray-700 */
+        }
+
+        #product-form input[type="text"],
+        #product-form input[type="url"],
+        #product-form input[type="number"],
+        #product-form select,
+        #customer-form input[type="text"],
+        #customer-form input[type="email"] { /* Додано стилі для інпутів клієнтів */
+            border: 1px solid #dc2626; /* border-red-300 згідно скріншоту */
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            width: 100%;
+            box-sizing: border-box; /* Враховуємо padding у ширині */
+        }
+
+        #product-form input:focus,
+        #product-form select:focus,
+        #customer-form input:focus { /* Додано фокус стилі для інпутів клієнтів */
+            outline: none;
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* ring-2 ring-blue-500 */
+        }
+
+        /* Стилі для кнопки видалення */
+        .delete-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #ef4444; /* red-600 */
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            z-index: 10; /* Щоб кнопка була поверх зображення */
+        }
+
+        .delete-button:hover {
+            background-color: #dc2626; /* red-700 */
+        }
+
+        /* Адаптивний дизайн для мобільних пристроїв */
+        @media (max-width: 768px) {
+            #main-nav .container {
+                flex-direction: column;
+                gap: 0.75rem; /* gap-3 */
+            }
+            #main-nav button {
+                width: 100%;
+            }
+            #product-list, #customer-list { /* Адаптуємо обидва списки */
+                grid-template-columns: 1fr; /* Один стовпець на мобільних */
+            }
+            #add-product-form, #add-customer-form { /* Адаптуємо обидві форми */
+                padding: 1.5rem; /* p-6 */
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-100 min-h-screen flex flex-col">
+
+<nav id="main-nav" class="bg-white p-4 shadow-md">
+    <div class="container mx-auto flex justify-center space-x-4">
+        <button id="products-btn" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">Продукти</button>
+        <button id="customers-btn" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">Клієнти</button>
+        <button id="categories-btn" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">Категорії</button>
+    </div>
+</nav>
+
+<div id="content" class="container mx-auto p-6 flex-grow bg-white rounded-lg shadow-md mt-8">
+    <div id="product-view">
+        <h1 class="text-4xl font-bold text-gray-800 mb-6 text-center">Продукти</h1>
+
+        <div class="mb-6 flex items-center space-x-4">
+            <label for="filter-category" class="text-lg text-gray-700 font-medium">Фільтрувати за категорією:</label>
+            <select id="filter-category" class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="Усі категорії">Усі категорії</option>
+                <option value="Електроніка">Електроніка</option>
+                <option value="Одяг">Одяг</option>
+                <option value="Книги">Книги</option>
+                <option value="Їжа">Їжа</option>
+                <option value="Побутова техніка">Побутова техніка</option>
+            </select>
+        </div>
+
+        <div id="error-message" class="text-red-600 bg-red-100 border border-red-400 p-3 rounded-md mb-6 hidden">
+            <p>Не вдалося завантажити продукти: Помилка завантаження продуктів: 404 Not Found</p>
+            <p class="font-bold text-center mt-2">404 Not Found</p>
+        </div>
+
+        <div class="flex space-x-4 mb-6">
+            <button id="add-product-show-form-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Додати продукт</button>
+            <button id="update-product-list-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Оновити список продуктів</button>
+        </div>
+
+        <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+        <p id="no-products-message" class="text-center text-gray-500 mt-8 hidden">Наразі немає продуктів. Додайте перший продукт!</p>
+    </div>
+
+    <div id="add-product-form" class="bg-white p-8 rounded-lg shadow-xl max-w-lg mx-auto mt-8 border border-gray-200 hidden">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Додати новий продукт</h2>
+        <form id="product-form" class="space-y-4">
+            <div>
+                <label for="product-name" class="block text-gray-700 text-sm font-bold mb-2">Назва:</label>
+                <input type="text" id="product-name" name="product-name" required class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="product-price" class="block text-gray-700 text-sm font-bold mb-2">Ціна:</label>
+                <input type="number" id="product-price" name="product-price" required class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01" min="0">
+            </div>
+
+            <div>
+                <label for="product-manufacturer" class="block text-gray-700 text-sm font-bold mb-2">Виробник:</label>
+                <input type="text" id="product-manufacturer" name="product-manufacturer" class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="product-origin-country" class="block text-gray-700 text-sm font-bold mb-2">Країна походження:</label>
+                <input type="text" id="product-origin-country" name="product-origin-country" class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="product-category-form" class="block text-gray-700 text-sm font-bold mb-2">Категорія (для форми):</label>
+                <select id="product-category-form" name="product-category-form" class="shadow border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Оберіть категорію</option>
+                    <option value="Електроніка">Електроніка</option>
+                    <option value="Одяг">Одяг</option>
+                    <option value="Книги">Книги</option>
+                    <option value="Їжа">Їжа</option>
+                    <option value="Побутова техніка">Побутова техніка</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="product-image-url" class="block text-gray-700 text-sm font-bold mb-2">Посилання на зображення:</label>
+                <input type="url" id="product-image-url" name="product-image-url" class="shadow appearance-none border border-gray-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="flex justify-end space-x-4 mt-6">
+                <button type="button" id="cancel-add-product-btn" class="px-6 py-3 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">Скасувати</button>
+                <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Зберегти продукт</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="customer-view" class="hidden">
+        <h1 class="text-4xl font-bold text-gray-800 mb-6 text-center">Клієнти</h1>
+
+        <div class="flex space-x-4 mb-6">
+            <button id="add-customer-show-form-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Додати клієнта</button>
+            <button id="update-customer-list-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Оновити список клієнтів</button>
+        </div>
+
+        <div id="customer-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+        <p id="no-customers-message" class="text-center text-gray-500 mt-8 hidden">Наразі немає клієнтів. Додайте першого клієнта!</p>
+    </div>
+
+    <div id="add-customer-form" class="bg-white p-8 rounded-lg shadow-xl max-w-lg mx-auto mt-8 border border-gray-200 hidden">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Додати нового клієнта</h2>
+        <form id="customer-form" class="space-y-4">
+            <div>
+                <label for="customer-name" class="block text-gray-700 text-sm font-bold mb-2">Ім'я:</label>
+                <input type="text" id="customer-name" name="customer-name" required class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label for="customer-email" class="block text-gray-700 text-sm font-bold mb-2">Електронна пошта:</label>
+                <input type="email" id="customer-email" name="customer-email" required class="shadow appearance-none border border-red-300 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex justify-end space-x-4 mt-6">
+                <button type="button" id="cancel-add-customer-btn" class="px-6 py-3 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">Скасувати</button>
+                <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Зберегти клієнта</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    // Масив для зберігання продуктів. Тимчасове зберігання в пам'яті.
+    let products = [
+        {
+            id: 1,
+            name: "Смартфон Pro X",
+            price: 25999.00,
+            manufacturer: "TechCorp",
+            originCountry: "Китай",
+            category: "Електроніка",
+            imageUrl: "https://via.placeholder.com/150/A3E4D7/FFFFFF?text=Смартфон+ProX"
+        },
+        {
+            id: 2,
+            name: "Футболка Бавовняна",
+            price: 499.50,
+            manufacturer: "StyleCo",
+            originCountry: "Туреччина",
+            category: "Одяг",
+            imageUrl: "https://via.placeholder.com/150/FAD7A0/FFFFFF?text=Футболка"
+        },
+        {
+            id: 3,
+            name: "Книга 'Історія'",
+            price: 350.00,
+            manufacturer: "Видавництво Знань",
+            originCountry: "Україна",
+            category: "Книги",
+            imageUrl: "https://via.placeholder.com/150/C3E1E0/FFFFFF?text=Книга"
+        },
+        {
+            id: 4,
+            name: "Мікрохвильова піч",
+            price: 3500.00,
+            manufacturer: "HomeTech",
+            originCountry: "Польща",
+            category: "Побутова техніка",
+            imageUrl: "https://via.placeholder.com/150/D2B4DE/FFFFFF?text=Мікрохвильова"
+        },
+        {
+            id: 5,
+            name: "Кава 'Арабіка'",
+            price: 180.00,
+            manufacturer: "CoffeeRoasters",
+            originCountry: "Бразилія",
+            category: "Їжа",
+            imageUrl: "https://via.placeholder.com/150/B5EAD7/FFFFFF?text=Кава"
+        }
+    ];
+
+    // Новий масив для зберігання клієнтів
+    let customers = [
+        {
+            id: 101,
+            name: "Oлена",
+            email: "olena.koval@mail.com"
+        },
+        {
+            id: 102,
+            name: "Іван ",
+            email: "ivan.petrenko@example.com"
+        },
+        {
+            id: 103,
+            name: "Марія Сидорова",
+            email: "maria.sidorova@example.com"
+        }
+    ];
+
+
+    // Отримуємо посилання на DOM-елементи продуктів
+    const productView = document.getElementById('product-view'); // Обгорнутий блок продуктів
+    const addProductForm = document.getElementById('add-product-form');
+    const productListDiv = document.getElementById('product-list');
+    const productForm = document.getElementById('product-form');
+    const noProductsMessage = document.getElementById('no-products-message');
+    const errorMessageDiv = document.getElementById('error-message');
+    const filterCategorySelect = document.getElementById('filter-category');
+
+    // Отримуємо посилання на DOM-елементи клієнтів
+    const customerView = document.getElementById('customer-view'); // Обгорнутий блок клієнтів
+    const addCustomerForm = document.getElementById('add-customer-form');
+    const customerListDiv = document.getElementById('customer-list');
+    const customerForm = document.getElementById('customer-form');
+    const noCustomersMessage = document.getElementById('no-customers-message');
+
+
+    // Отримуємо посилання на кнопки
+    const productsBtn = document.getElementById('products-btn');
+    const customersBtn = document.getElementById('customers-btn');
+    const categoriesBtn = document.getElementById('categories-btn'); // Заглушка для категорій
+
+    // Кнопки дій для продуктів
+    const addProductShowFormBtn = document.getElementById('add-product-show-form-btn');
+    const updateProductListBtn = document.getElementById('update-product-list-btn');
+    const cancelAddProductBtn = document.getElementById('cancel-add-product-btn');
+
+    // Кнопки дій для клієнтів
+    const addCustomerShowFormBtn = document.getElementById('add-customer-show-form-btn');
+    const updateCustomerListBtn = document.getElementById('update-customer-list-btn');
+    const cancelAddCustomerBtn = document.getElementById('cancel-add-customer-btn');
+
+
+    // --- Функції для Продуктів ---
+
+    // Функція для відображення секції продуктів та приховування інших
+    function showProducts() {
+        productView.classList.remove('hidden');
+        customerView.classList.add('hidden');
+        addProductForm.classList.add('hidden'); // Приховати форму продукту, якщо вона відкрита
+        addCustomerForm.classList.add('hidden'); // Приховати форму клієнта, якщо вона відкрита
+        errorMessageDiv.classList.add('hidden');
+        renderProducts();
+    }
+
+    // Функція для відображення форми додавання продукту
+    function showAddProductForm() {
+        productView.classList.add('hidden');
+        addProductForm.classList.remove('hidden');
+        productForm.reset();
+    }
+
+    // Функція для приховування форми додавання продукту
+    function hideAddProductForm() {
+        addProductForm.classList.add('hidden');
+        productView.classList.remove('hidden');
+    }
+
+    // Функція для додавання нового продукту
+    function addProduct(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('product-name').value;
+        const price = parseFloat(document.getElementById('product-price').value);
+        const manufacturer = document.getElementById('product-manufacturer').value;
+        const originCountry = document.getElementById('product-origin-country').value;
+        const category = document.getElementById('product-category-form').value;
+        const imageUrl = document.getElementById('product-image-url').value;
+
+        const newProduct = {
+            id: Date.now(),
+            name: name,
+            price: isNaN(price) ? 0 : price,
+            manufacturer: manufacturer || 'Не вказано',
+            originCountry: originCountry || 'Не вказано',
+            category: category || 'Не вказано',
+            imageUrl: imageUrl || 'https://placehold.co/400x300/E0E0E0/606060?text=Без+зображення'
+        };
+
+        products.push(newProduct);
+        hideAddProductForm();
+        renderProducts();
+        productForm.reset();
+    }
+
+    // Функція для видалення продукту
+    function deleteProduct(productId) {
+        products = products.filter(product => product.id !== productId);
+        renderProducts();
+    }
+
+    // Функція для відображення продуктів у DOM з урахуванням фільтрації
+    function renderProducts() {
+        productListDiv.innerHTML = '';
+
+        const selectedCategory = filterCategorySelect.value;
+        let filteredProducts = products;
+
+        if (selectedCategory !== 'Усі категорії') {
+            filteredProducts = products.filter(product => product.category === selectedCategory);
+        }
+
+        if (filteredProducts.length === 0) {
+            noProductsMessage.classList.remove('hidden');
+        } else {
+            noProductsMessage.classList.add('hidden');
+        }
+
+        filteredProducts.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.classList.add('product-card');
+
+            productCard.innerHTML = `
+                <button class="delete-button" data-id="${product.id}" data-type="product">Видалити</button>
+                <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-40 object-contain rounded-md mb-4" onerror="this.onerror=null; this.src='https://placehold.co/400x300/E0E0E0/606060?text=Зображення+недоступне';">
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">${product.name}</h3>
+                <p class="text-sm text-gray-600 mb-1">Ціна: ${product.price.toFixed(2)} грн</p>
+                <p class="text-sm text-gray-600 mb-1">Виробник: ${product.manufacturer}</p>
+                <p class="text-sm text-gray-600 mb-1">Країна походження: ${product.originCountry}</p>
+                <p class="text-sm text-gray-600">Категорія: ${product.category}</p>
+            `;
+            productListDiv.appendChild(productCard);
+        });
+
+        // Додаємо слухачів подій для кнопок видалення після рендерингу
+        document.querySelectorAll('.delete-button[data-type="product"]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const productId = parseInt(e.target.dataset.id);
+                deleteProduct(productId);
+            });
+        });
+    }
+
+    // --- Функції для Клієнтів ---
+
+    // Функція для відображення секції клієнтів та приховування інших
+    function showCustomers() {
+        customerView.classList.remove('hidden');
+        productView.classList.add('hidden');
+        addProductForm.classList.add('hidden'); // Приховати форму продукту, якщо вона відкрита
+        addCustomerForm.classList.add('hidden'); // Приховати форму клієнта, якщо вона відкрита
+        errorMessageDiv.classList.add('hidden');
+        renderCustomers();
+    }
+
+    // Функція для відображення форми додавання клієнта
+    function showAddCustomerForm() {
+        customerView.classList.add('hidden');
+        addCustomerForm.classList.remove('hidden');
+        customerForm.reset();
+    }
+
+    // Функція для приховування форми додавання клієнта
+    function hideAddCustomerForm() {
+        addCustomerForm.classList.add('hidden');
+        customerView.classList.remove('hidden');
+    }
+
+    // Функція для додавання нового клієнта
+    function addCustomer(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('customer-name').value;
+        const email = document.getElementById('customer-email').value;
+
+        const newCustomer = {
+            id: Date.now(),
+            name: name,
+            email: email
+        };
+
+        customers.push(newCustomer);
+        hideAddCustomerForm();
+        renderCustomers();
+        customerForm.reset();
+    }
+
+    // Функція для видалення клієнта
+    function deleteCustomer(customerId) {
+        customers = customers.filter(customer => customer.id !== customerId);
+        renderCustomers();
+    }
+
+    // Функція для відображення клієнтів у DOM
+    function renderCustomers() {
+        customerListDiv.innerHTML = '';
+
+        if (customers.length === 0) {
+            noCustomersMessage.classList.remove('hidden');
+        } else {
+            noCustomersMessage.classList.add('hidden');
+        }
+
+        customers.forEach(customer => {
+            const customerCard = document.createElement('div');
+            customerCard.classList.add('customer-card');
+
+            customerCard.innerHTML = `
+                <button class="delete-button" data-id="${customer.id}" data-type="customer">Видалити</button>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">${customer.name}</h3>
+                <p class="text-sm text-gray-600">Email: ${customer.email}</p>
+            `;
+            customerListDiv.appendChild(customerCard);
+        });
+
+        // Додаємо слухачів подій для кнопок видалення після рендерингу
+        document.querySelectorAll('.delete-button[data-type="customer"]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const customerId = parseInt(e.target.dataset.id);
+                deleteCustomer(customerId);
+            });
+        });
+    }
+
+
+    // --- Додаємо обробники подій ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Ініціалізація: відображаємо продукти при завантаженні сторінки за замовчуванням
+        showProducts();
+
+        // Навігаційні кнопки
+        productsBtn.addEventListener('click', showProducts);
+        customersBtn.addEventListener('click', showCustomers); // Тепер показує розділ клієнтів
+        categoriesBtn.addEventListener('click', () => alert('Тут буде розділ "Категорії"'));
+
+        // Кнопки дій для продуктів
+        addProductShowFormBtn.addEventListener('click', showAddProductForm);
+        updateProductListBtn.addEventListener('click', renderProducts);
+        cancelAddProductBtn.addEventListener('click', hideAddProductForm);
+        productForm.addEventListener('submit', addProduct);
+        filterCategorySelect.addEventListener('change', renderProducts);
+
+        // Кнопки дій для клієнтів
+        addCustomerShowFormBtn.addEventListener('click', showAddCustomerForm);
+        updateCustomerListBtn.addEventListener('click', renderCustomers);
+        cancelAddCustomerBtn.addEventListener('click', hideAddCustomerForm);
+        customerForm.addEventListener('submit', addCustomer);
+    });
+</script>
+</body>
+</html>
