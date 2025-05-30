@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Management System</title>
+    <link rel="stylesheet" th:href="@{/css/material-dark.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="md-container">
+        <h1>🛒 Shop Management System</h1>
+        <p>Welcome to your comprehensive shop management dashboard. Select an entity to manage:</p>
+        
+        <nav>
+            <ul class="md-nav-list">
+                <li class="md-nav-item">
+                    <a th:href="@{/frontend/products}" class="md-nav-link">
+                        <span>Manage Products</span>
+                    </a>
+                </li>
+                <li class="md-nav-item">
+                    <a th:href="@{/frontend/categories}" class="md-nav-link">
+                        <span>Manage Categories</span>
+                    </a>
+                </li>
+                <li class="md-nav-item">
+                    <a th:href="@{/frontend/stores}" class="md-nav-link">
+                        <span>Manage Stores</span>
+                    </a>
+                </li>
+                <li class="md-nav-item">
+                    <a th:href="@{/frontend/customers}" class="md-nav-link">
+                        <span>Manage Customers</span>
+                    </a>
+                </li>
+                <li class="md-nav-item">
+                    <a th:href="@{/frontend/purchases}" class="md-nav-link">
+                        <span>Manage Purchases</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="md-card">
+            <h3>Quick Stats</h3>
+            <p>Use the navigation above to manage your shop's inventory, customer base, and sales records. Each section provides comprehensive tools for adding, viewing, and organizing your business data.</p>
+        </div>
+    </div>
+</body>
+</html>

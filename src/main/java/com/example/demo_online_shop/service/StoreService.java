@@ -69,7 +69,7 @@ public class StoreService {
      * @param store Об'єкт магазину, який потрібно додати.
      * @return Створений магазин.
      */
-    public Store addStore(Store store) {
+    public Store createStore(Store store) {
         return storeRepo.save(store);
     }
 

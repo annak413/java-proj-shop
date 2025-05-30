@@ -1,5 +1,7 @@
 // Store.java
 package com.example.demo_online_shop.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +25,7 @@ public class Store {
             joinColumns = @JoinColumn(name = "store_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
+    @JsonIgnore
     private Set<Product> products = new HashSet<>();
 
     public Store() {}
@@ -67,10 +70,13 @@ public class Store {
 
     public void addProduct(Product product) {
         products.add(product);
+        product.getStores().add(this);
     }
 
     public void removeProduct(Product product) {
+
         products.remove(product);
+        product.getStores().remove(this);
     }
 
     @Override

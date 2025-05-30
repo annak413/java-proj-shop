@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Stores - Shop Management</title>
+    <link rel="stylesheet" th:href="@{/css/material-dark.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="md-container">
+        <h1>🏬 Manage Stores</h1>
+
+        <!-- Add Store Form -->
+        <div class="md-card md-form-section">
+            <h2>Add New Store</h2>
+            <form th:action="@{/frontend/stores/add}" th:object="${store}" method="post">
+                <div class="md-form-group">
+                    <label for="name" class="md-label">Store Name</label>
+                    <input type="text" id="name" th:field="*{name}" class="md-input" 
+                           placeholder="Enter store name (e.g., Downtown Branch)" required />
+                </div>
+                
+                <div class="md-form-group">
+                    <label for="location" class="md-label">Location</label>
+                    <input type="text" id="location" th:field="*{location}" class="md-input" 
+                           placeholder="Enter store location (e.g., 123 Main St, City)" required />
+                </div>
+                
+                <button type="submit" class="md-button">Add Store</button>
+            </form>
+        </div>
+
+        <!-- List of Stores -->
+        <div class="md-card">
+            <h2>Store Network</h2>
+            
+            <div th:if="${stores.isEmpty()}" class="md-empty-state">
+                <p>No stores found. Add your first store location using the form above.</p>
+            </div>
+            
+            <div th:unless="${stores.isEmpty()}" class="md-table-container">
+                <table class="md-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Store Name</th>
+                            <th>Location</th>
+                            <th>Products Available</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="st : ${stores}">
+                            <td th:text="${st.id}"></td>
+                            <td>
+                                <span style="font-weight: 500;" th:text="${st.name}"></span>
+                            </td>
+                            <td>
+                                <span style="color: var(--md-outline);" th:text="${st.location}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${st.products != null}" 
+                                      th:text="${#lists.size(st.products)}"
+                                      style="background-color: var(--md-info); color: var(--md-on-primary); 
+                                             padding: 4px 12px; border-radius: 16px; font-size: 0.875rem; font-weight: 500;"></span>
+                                <span th:if="${st.products == null}" 
+                                      style="background-color: var(--md-outline); color: var(--md-on-surface); 
+                                             padding: 4px 12px; border-radius: 16px; font-size: 0.875rem;">0</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a th:href="@{/frontend}" class="md-back-link">Back to Dashboard</a>
+    </div>
+</body>
+</html>

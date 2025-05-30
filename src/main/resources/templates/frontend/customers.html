@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Customers - Shop Management</title>
+    <link rel="stylesheet" th:href="@{/css/material-dark.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="md-container">
+        <h1>👥 Manage Customers</h1>
+
+        <!-- Add Customer Form -->
+        <div class="md-card md-form-section">
+            <h2>Add New Customer</h2>
+            <form th:action="@{/frontend/customers/add}" th:object="${customer}" method="post">
+                <div class="md-form-group">
+                    <label for="name" class="md-label">Customer Name</label>
+                    <input type="text" id="name" th:field="*{name}" class="md-input" 
+                           placeholder="Enter full name (e.g., John Doe)" required />
+                </div>
+                
+                <div class="md-form-group">
+                    <label for="email" class="md-label">Email Address</label>
+                    <input type="email" id="email" th:field="*{email}" class="md-input" 
+                           placeholder="Enter email address (e.g., john@example.com)" required />
+                </div>
+                
+                <button type="submit" class="md-button">Add Customer</button>
+            </form>
+        </div>
+
+        <!-- List of Customers -->
+        <div class="md-card">
+            <h2>Customer Database</h2>
+            
+            <div th:if="${customers.isEmpty()}" class="md-empty-state">
+                <p>No customers found. Register your first customer using the form above.</p>
+            </div>
+            
+            <div th:unless="${customers.isEmpty()}" class="md-table-container">
+                <table class="md-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer Name</th>
+                            <th>Email Address</th>
+                            <th>Total Purchases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="cust : ${customers}">
+                            <td th:text="${cust.id}"></td>
+                            <td>
+                                <span style="font-weight: 500;" th:text="${cust.name}"></span>
+                            </td>
+                            <td>
+                                <a th:href="'mailto:' + ${cust.email}" 
+                                   style="color: var(--md-secondary); text-decoration: none;"
+                                   th:text="${cust.email}"></a>
+                            </td>
+                            <td>
+                                <span th:if="${cust.purchases != null}" 
+                                      th:text="${#lists.size(cust.purchases)}"
+                                      style="background-color: var(--md-success); color: var(--md-on-primary); 
+                                             padding: 4px 12px; border-radius: 16px; font-size: 0.875rem; font-weight: 500;"></span>
+                                <span th:if="${cust.purchases == null}" 
+                                      style="background-color: var(--md-outline); color: var(--md-on-surface); 
+                                             padding: 4px 12px; border-radius: 16px; font-size: 0.875rem;">0</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a th:href="@{/frontend}" class="md-back-link">Back to Dashboard</a>
+    </div>
+</body>
+</html>

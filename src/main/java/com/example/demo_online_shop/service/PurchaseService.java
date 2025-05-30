@@ -73,4 +73,31 @@ public class PurchaseService {
     public List<Purchase> getAllPurchases() {
         return purchaseRepo.findAll();
     }
+
+    /**
+     * Creates a new purchase record.
+     * Assumes the Purchase object has Customer, Product, and PurchaseDate already set.
+     *
+     * @param purchase The purchase object to save.
+     * @return The saved purchase object.
+     */
+    @Transactional
+    public Purchase createPurchase(Purchase purchase) {
+        // Ensure customer and product are not null if they are required by business logic before saving
+        if (purchase.getCustomer() == null || purchase.getCustomer().getId() == null) {
+            throw new IllegalArgumentException("Customer cannot be null for a purchase.");
+        }
+        if (purchase.getProduct() == null || purchase.getProduct().getId() == null) {
+            throw new IllegalArgumentException("Product cannot be null for a purchase.");
+        }
+        if (purchase.getPurchaseDate() == null) {
+            throw new IllegalArgumentException("Purchase date cannot be null.");
+        }
+        // Optional: Add check for duplicate purchase if needed, similar to registerPurchase
+        // boolean alreadyPurchased = purchaseRepo.existsByCustomerAndProductAndPurchaseDate(purchase.getCustomer(), purchase.getProduct(), purchase.getPurchaseDate());
+        // if (alreadyPurchased) {
+        //     throw new IllegalStateException("This product has already been purchased by this customer on this date.");
+        // }
+        return purchaseRepo.save(purchase);
+    }
 }

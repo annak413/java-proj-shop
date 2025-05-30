@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories - Shop Management</title>
+    <link rel="stylesheet" th:href="@{/css/material-dark.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="md-container">
+        <h1>🗂️ Manage Categories</h1>
+
+        <!-- Add Category Form -->
+        <div class="md-card md-form-section">
+            <h2>Add New Category</h2>
+            <form th:action="@{/frontend/categories/add}" th:object="${category}" method="post">
+                <div class="md-form-group">
+                    <label for="name" class="md-label">Category Name</label>
+                    <input type="text" id="name" th:field="*{name}" class="md-input" 
+                           placeholder="Enter category name (e.g., Electronics, Clothing)" required />
+                </div>
+                
+                <button type="submit" class="md-button">Add Category</button>
+            </form>
+        </div>
+
+        <!-- List of Categories -->
+        <div class="md-card">
+            <h2>Category Overview</h2>
+            
+            <div th:if="${categories.isEmpty()}" class="md-empty-state">
+                <p>No categories found. Create your first category using the form above.</p>
+            </div>
+            
+            <div th:unless="${categories.isEmpty()}" class="md-table-container">
+                <table class="md-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Category Name</th>
+                            <th>Products Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="cat : ${categories}">
+                            <td th:text="${cat.id}"></td>
+                            <td>
+                                <span style="font-weight: 500;" th:text="${cat.name}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${cat.products != null}" 
+                                      th:text="${#lists.size(cat.products)}"
+                                      style="background-color: var(--md-secondary); color: var(--md-on-secondary); 
+                                             padding: 4px 12px; border-radius: 16px; font-size: 0.875rem; font-weight: 500;"></span>
+                                <span th:if="${cat.products == null}" 
+                                      style="background-color: var(--md-outline); color: var(--md-on-surface); 
+                                             padding: 4px 12px; border-radius: 16px; font-size: 0.875rem;">0</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a th:href="@{/frontend}" class="md-back-link">Back to Dashboard</a>
+    </div>
+</body>
+</html>

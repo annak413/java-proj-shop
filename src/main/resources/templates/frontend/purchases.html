@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Purchases - Shop Management</title>
+    <link rel="stylesheet" th:href="@{/css/material-dark.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="md-container">
+        <h1>🛒 Manage Purchases</h1>
+
+        <!-- Add Purchase Form -->
+        <div class="md-card md-form-section">
+            <h2>Record New Purchase</h2>
+            <form th:action="@{/frontend/purchases/add}" th:object="${purchase}" method="post">
+                <div class="md-form-group">
+                    <label for="customer" class="md-label">Customer</label>
+                    <select id="customer" th:field="*{customer.id}" class="md-select" required>
+                        <option value="">Select a customer</option>
+                        <option th:each="cust : ${customers}" th:value="${cust.id}" 
+                                th:text="${cust.name} + ' (' + ${cust.email} + ')'"></option>
+                    </select>
+                </div>
+                
+                <div class="md-form-group">
+                    <label for="product" class="md-label">Product</label>
+                    <select id="product" th:field="*{product.id}" class="md-select" required>
+                        <option value="">Select a product</option>
+                        <option th:each="prod : ${products}" th:value="${prod.id}" 
+                                th:text="${prod.name} + ' - $' + ${#numbers.formatDecimal(prod.price, 1, 'COMMA', 2, 'POINT')}"></option>
+                    </select>
+                </div>
+                
+                <div class="md-form-group">
+                    <label for="purchaseDate" class="md-label">Purchase Date</label>
+                    <input type="date" id="purchaseDate" th:field="*{purchaseDate}" class="md-input" required />
+                </div>
+                
+                <button type="submit" class="md-button">Record Purchase</button>
+            </form>
+        </div>
+
+        <!-- List of Purchases -->
+        <div class="md-card">
+            <h2>Purchase History</h2>
+            
+            <div th:if="${purchases.isEmpty()}" class="md-empty-state">
+                <p>No purchases recorded yet. Record your first sale using the form above.</p>
+            </div>
+            
+            <div th:unless="${purchases.isEmpty()}" class="md-table-container">
+                <table class="md-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Purchase Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pur : ${purchases}">
+                            <td th:text="${pur.id}"></td>
+                            <td>
+                                <div th:if="${pur.customer != null}">
+                                    <div style="font-weight: 500;" th:text="${pur.customer.name}"></div>
+                                    <div style="font-size: 0.75rem; color: var(--md-outline);" th:text="${pur.customer.email}"></div>
+                                </div>
+                                <span th:if="${pur.customer == null}" class="md-error">Unknown Customer</span>
+                            </td>
+                            <td>
+                                <div th:if="${pur.product != null}">
+                                    <div style="font-weight: 500;" th:text="${pur.product.name}"></div>
+                                    <div th:if="${pur.product.category != null}" 
+                                         style="font-size: 0.75rem; color: var(--md-outline);" 
+                                         th:text="${pur.product.category.name}"></div>
+                                </div>
+                                <span th:if="${pur.product == null}" class="md-error">Unknown Product</span>
+                            </td>
+                            <td>
+                                <span th:if="${pur.product != null}" 
+                                      style="font-weight: 500; color: var(--md-success);">
+                                    $<span th:text="${#numbers.formatDecimal(pur.product.price, 1, 'COMMA', 2, 'POINT')}"></span>
+                                </span>
+                                <span th:if="${pur.product == null}" class="md-error">N/A</span>
+                            </td>
+                            <td>
+                                <span style="background-color: var(--md-secondary); color: var(--md-on-secondary); 
+                                             padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500;"
+                                      th:text="${#temporals.format(pur.purchaseDate, 'MMM dd, yyyy')}"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a th:href="@{/frontend}" class="md-back-link">Back to Dashboard</a>
+    </div>
+</body>
+</html>

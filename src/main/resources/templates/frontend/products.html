@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products - Shop Management</title>
+    <link rel="stylesheet" th:href="@{/css/material-dark.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="md-container">
+        <h1>📦 Manage Products</h1>
+
+        <!-- Add Product Form -->
+        <div class="md-card md-form-section">
+            <h2>Add New Product</h2>
+            <form th:action="@{/frontend/products/add}" th:object="${product}" method="post">
+                <div class="md-form-group">
+                    <label for="name" class="md-label">Product Name</label>
+                    <input type="text" id="name" th:field="*{name}" class="md-input" 
+                           placeholder="Enter product name" required />
+                </div>
+                
+                <div class="md-form-group">
+                    <label for="price" class="md-label">Price ($)</label>
+                    <input type="number" id="price" th:field="*{price}" class="md-input" 
+                           step="0.01" min="0" placeholder="0.00" required />
+                </div>
+                
+                <div class="md-form-group">
+                    <label for="category" class="md-label">Category</label>
+                    <select id="category" th:field="*{category.id}" class="md-select" required>
+                        <option value="">Select a category</option>
+                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                    </select>
+                </div>
+                
+                <div class="md-form-group">
+                    <label for="stores" class="md-label">Available in Stores</label>
+                    <small style="color: var(--md-outline); display: block; margin-bottom: 8px;">
+                        Hold Ctrl/Cmd to select multiple stores
+                    </small>
+                    <select id="stores" th:field="*{stores}" class="md-select" multiple="multiple" required>
+                        <option th:each="store : ${stores}" th:value="${store.id}" th:text="${store.name}"></option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="md-button">Add Product</button>
+            </form>
+        </div>
+
+        <!-- List of Products -->
+        <div class="md-card">
+            <h2>Product Inventory</h2>
+            
+            <div th:if="${products.isEmpty()}" class="md-empty-state">
+                <p>No products found. Add your first product using the form above.</p>
+            </div>
+            
+            <div th:unless="${products.isEmpty()}" class="md-table-container">
+                <table class="md-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Name</th>
+                            <th>Price</th>
+                            <th>Category</th>
+                            <th>Available Stores</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="prod : ${products}">
+                            <td th:text="${prod.id}"></td>
+                            <td th:text="${prod.name}"></td>
+                            <td>
+                                <span style="font-weight: 500;">$</span>
+                                <span th:text="${#numbers.formatDecimal(prod.price, 1, 'COMMA', 2, 'POINT')}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${prod.category != null}" 
+                                      th:text="${prod.category.name}"
+                                      style="background-color: var(--md-primary); color: var(--md-on-primary); 
+                                             padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;"></span>
+                                <span th:if="${prod.category == null}" class="md-error">No Category</span>
+                            </td>
+                            <td>
+                                <div th:if="${prod.stores != null and !prod.stores.isEmpty()}">
+                                    <ul>
+                                        <li th:each="store : ${prod.stores}" th:text="${store.name}"></li>
+                                    </ul>
+                                </div>
+                                <span th:if="${prod.stores == null or prod.stores.isEmpty()}" 
+                                      class="md-warning">No stores assigned</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <a th:href="@{/frontend}" class="md-back-link">Back to Dashboard</a>
+    </div>
+</body>
+</html>
