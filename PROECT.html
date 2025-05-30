@@ -160,6 +160,23 @@
         <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         </div>
         <p id="no-products-message" class="text-center text-gray-500 mt-8 hidden">Наразі немає продуктів. Додайте перший продукт!</p>
+
+        <div class="mb-6 p-4 border rounded-lg shadow-sm bg-gray-50 mt-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Спосіб оплати</h2>
+            <div class="flex flex-col space-y-3">
+                <label class="inline-flex items-center">
+                    <input type="radio" name="payment-method" value="card" class="form-radio text-blue-600 h-5 w-5">
+                    <span class="ml-2 text-gray-700 text-lg">Оплата карткою</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="payment-method" value="cash" class="form-radio text-blue-600 h-5 w-5" checked>
+                    <span class="ml-2 text-gray-700 text-lg">Готівкою при отриманні</span>
+                </label>
+            </div>
+            <button id="purchase-button" class="mt-6 w-full px-6 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 opacity-50 cursor-not-allowed" disabled>
+                Придбати обрані товари
+            </button>
+        </div>
     </div>
 
     <div id="add-product-form" class="bg-white p-8 rounded-lg shadow-xl max-w-lg mx-auto mt-8 border border-gray-200 hidden">
@@ -240,6 +257,12 @@
         </form>
     </div>
 
+    <div id="categories-view" class="hidden">
+        <h1 class="text-4xl font-bold text-gray-800 mb-6 text-center">Категорії</h1>
+        <div id="category-buttons" class="flex flex-wrap justify-center gap-4">
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -311,28 +334,35 @@
         }
     ];
 
+    // Новий масив для зберігання продуктів у кошику
+    let cart = [];
 
     // Отримуємо посилання на DOM-елементи продуктів
-    const productView = document.getElementById('product-view'); // Обгорнутий блок продуктів
+    const productView = document.getElementById('product-view');
     const addProductForm = document.getElementById('add-product-form');
     const productListDiv = document.getElementById('product-list');
     const productForm = document.getElementById('product-form');
     const noProductsMessage = document.getElementById('no-products-message');
     const errorMessageDiv = document.getElementById('error-message');
     const filterCategorySelect = document.getElementById('filter-category');
+    const purchaseButton = document.getElementById('purchase-button'); // Кнопка придбання
 
     // Отримуємо посилання на DOM-елементи клієнтів
-    const customerView = document.getElementById('customer-view'); // Обгорнутий блок клієнтів
+    const customerView = document.getElementById('customer-view');
     const addCustomerForm = document.getElementById('add-customer-form');
     const customerListDiv = document.getElementById('customer-list');
     const customerForm = document.getElementById('customer-form');
     const noCustomersMessage = document.getElementById('no-customers-message');
 
+    // Отримуємо посилання на DOM-елементи категорій
+    const categoriesView = document.getElementById('categories-view');
+    const categoryButtonsContainer = document.getElementById('category-buttons');
 
-    // Отримуємо посилання на кнопки
+
+    // Отримуємо посилання на навігаційні кнопки
     const productsBtn = document.getElementById('products-btn');
     const customersBtn = document.getElementById('customers-btn');
-    const categoriesBtn = document.getElementById('categories-btn'); // Заглушка для категорій
+    const categoriesBtn = document.getElementById('categories-btn');
 
     // Кнопки дій для продуктів
     const addProductShowFormBtn = document.getElementById('add-product-show-form-btn');
@@ -347,19 +377,26 @@
 
     // --- Функції для Продуктів ---
 
-    // Функція для відображення секції продуктів та приховування інших
-    function showProducts() {
-        productView.classList.remove('hidden');
+    // Функція для приховування всіх секцій
+    function hideAllViews() {
+        productView.classList.add('hidden');
         customerView.classList.add('hidden');
-        addProductForm.classList.add('hidden'); // Приховати форму продукту, якщо вона відкрита
-        addCustomerForm.classList.add('hidden'); // Приховати форму клієнта, якщо вона відкрита
+        categoriesView.classList.add('hidden');
+        addProductForm.classList.add('hidden');
+        addCustomerForm.classList.add('hidden');
         errorMessageDiv.classList.add('hidden');
+    }
+
+    // Функція для відображення секції продуктів
+    function showProducts() {
+        hideAllViews();
+        productView.classList.remove('hidden');
         renderProducts();
     }
 
     // Функція для відображення форми додавання продукту
     function showAddProductForm() {
-        productView.classList.add('hidden');
+        hideAllViews();
         addProductForm.classList.remove('hidden');
         productForm.reset();
     }
@@ -400,7 +437,35 @@
     // Функція для видалення продукту
     function deleteProduct(productId) {
         products = products.filter(product => product.id !== productId);
-        renderProducts();
+        // Також видаляємо продукт з кошика, якщо він там є
+        cart = cart.filter(item => item.id !== productId);
+        renderProducts(); // Перерендеримо, щоб оновити стан карток та кнопки придбання
+    }
+
+    // Функція для додавання продукту до кошика
+    function addToCart(productId) {
+        const productToAdd = products.find(product => product.id === productId);
+        if (productToAdd && !cart.some(item => item.id === productId)) { // Перевіряємо, чи вже є в кошику
+            cart.push(productToAdd);
+            alert(`Продукт "${productToAdd.name}" додано до кошика.`);
+            updatePurchaseButtonText(); // Оновлюємо текст кнопки "Придбати"
+        } else if (productToAdd) {
+            alert(`Продукт "${productToAdd.name}" вже є у кошику.`);
+        }
+    }
+
+    // Функція для оновлення тексту кнопки "Придбати" та її стану
+    function updatePurchaseButtonText() {
+        if (cart.length > 0) {
+            const totalCost = cart.reduce((sum, item) => sum + item.price, 0);
+            purchaseButton.textContent = `Придбати товари (${cart.length}, Загалом: ${totalCost.toFixed(2)} грн)`;
+            purchaseButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            purchaseButton.disabled = false;
+        } else {
+            purchaseButton.textContent = 'Придбати обрані товари';
+            purchaseButton.classList.add('opacity-50', 'cursor-not-allowed');
+            purchaseButton.disabled = true;
+        }
     }
 
     // Функція для відображення продуктів у DOM з урахуванням фільтрації
@@ -424,6 +489,11 @@
             const productCard = document.createElement('div');
             productCard.classList.add('product-card');
 
+            // Перевіряємо, чи продукт вже є в кошику, щоб змінити текст кнопки та стилі
+            const isInCart = cart.some(item => item.id === product.id);
+            const buttonText = isInCart ? 'У кошику' : 'Додати до кошика';
+            const buttonClass = isInCart ? 'bg-gray-500 hover:bg-gray-600 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700';
+
             productCard.innerHTML = `
                 <button class="delete-button" data-id="${product.id}" data-type="product">Видалити</button>
                 <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-40 object-contain rounded-md mb-4" onerror="this.onerror=null; this.src='https://placehold.co/400x300/E0E0E0/606060?text=Зображення+недоступне';">
@@ -432,6 +502,7 @@
                 <p class="text-sm text-gray-600 mb-1">Виробник: ${product.manufacturer}</p>
                 <p class="text-sm text-gray-600 mb-1">Країна походження: ${product.originCountry}</p>
                 <p class="text-sm text-gray-600">Категорія: ${product.category}</p>
+                <button class="add-to-cart-button mt-4 px-4 py-2 text-white rounded-md transition duration-300 ${buttonClass}" data-id="${product.id}" ${isInCart ? 'disabled' : ''}>${buttonText}</button>
             `;
             productListDiv.appendChild(productCard);
         });
@@ -443,23 +514,31 @@
                 deleteProduct(productId);
             });
         });
+
+        // Додаємо слухачів подій для нових кнопок "Додати до кошика"
+        document.querySelectorAll('.add-to-cart-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const productId = parseInt(e.target.dataset.id);
+                addToCart(productId);
+                renderProducts(); // Перерендеримо продукти, щоб оновити стан кнопки "Додати до кошика"
+            });
+        });
+
+        updatePurchaseButtonText(); // Оновлюємо кнопку придбання при кожному рендері
     }
 
     // --- Функції для Клієнтів ---
 
-    // Функція для відображення секції клієнтів та приховування інших
+    // Функція для відображення секції клієнтів
     function showCustomers() {
+        hideAllViews();
         customerView.classList.remove('hidden');
-        productView.classList.add('hidden');
-        addProductForm.classList.add('hidden'); // Приховати форму продукту, якщо вона відкрита
-        addCustomerForm.classList.add('hidden'); // Приховати форму клієнта, якщо вона відкрита
-        errorMessageDiv.classList.add('hidden');
         renderCustomers();
     }
 
     // Функція для відображення форми додавання клієнта
     function showAddCustomerForm() {
-        customerView.classList.add('hidden');
+        hideAllViews();
         addCustomerForm.classList.remove('hidden');
         customerForm.reset();
     }
@@ -526,6 +605,41 @@
         });
     }
 
+    // --- Функції для Категорій ---
+
+    // Функція для відображення секції категорій
+    function showCategories() {
+        hideAllViews();
+        categoriesView.classList.remove('hidden');
+        renderCategoryButtons();
+    }
+
+    // Функція для рендерингу кнопок категорій
+    function renderCategoryButtons() {
+        categoryButtonsContainer.innerHTML = '';
+        const uniqueCategories = [...new Set(products.map(product => product.category))];
+
+        uniqueCategories.forEach(category => {
+            const button = document.createElement('button');
+            button.classList.add('px-6', 'py-3', 'bg-blue-600', 'text-white', 'rounded-lg', 'shadow-md', 'hover:bg-blue-700', 'transition', 'duration-300', 'ease-in-out', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-opacity-50');
+            button.textContent = category;
+            button.addEventListener('click', () => {
+                alert(`Ви обрали категорію: ${category}`);
+                // Опціонально: можна переключитися назад до перегляду продуктів та відфільтрувати за цією категорією
+                // filterCategorySelect.value = category;
+                // showProducts();
+            });
+            categoryButtonsContainer.appendChild(button);
+        });
+
+        if (uniqueCategories.length === 0) {
+            const noCategoriesMessage = document.createElement('p');
+            noCategoriesMessage.classList.add('text-center', 'text-gray-500', 'mt-8');
+            noCategoriesMessage.textContent = 'Наразі немає доступних категорій продуктів.';
+            categoryButtonsContainer.appendChild(noCategoriesMessage);
+        }
+    }
+
 
     // --- Додаємо обробники подій ---
     document.addEventListener('DOMContentLoaded', () => {
@@ -534,8 +648,8 @@
 
         // Навігаційні кнопки
         productsBtn.addEventListener('click', showProducts);
-        customersBtn.addEventListener('click', showCustomers); // Тепер показує розділ клієнтів
-        categoriesBtn.addEventListener('click', () => alert('Тут буде розділ "Категорії"'));
+        customersBtn.addEventListener('click', showCustomers);
+        categoriesBtn.addEventListener('click', showCategories);
 
         // Кнопки дій для продуктів
         addProductShowFormBtn.addEventListener('click', showAddProductForm);
@@ -549,6 +663,45 @@
         updateCustomerListBtn.addEventListener('click', renderCustomers);
         cancelAddCustomerBtn.addEventListener('click', hideAddCustomerForm);
         customerForm.addEventListener('submit', addCustomer);
+
+        // Обробник подій для кнопки "Придбати обрані товари"
+        purchaseButton.addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('Будь ласка, спочатку додайте товари до кошика!');
+                return;
+            }
+
+            const selectedPaymentMethod = document.querySelector('input[name="payment-method"]:checked');
+            if (selectedPaymentMethod) {
+                const paymentMethod = selectedPaymentMethod.value;
+                const totalCost = cart.reduce((sum, item) => sum + item.price, 0);
+
+                let message = `Ваше замовлення:\n\n`;
+                cart.forEach(item => {
+                    message += `- ${item.name} (${item.price.toFixed(2)} грн)\n`;
+                });
+                message += `\nЗагальна сума: ${totalCost.toFixed(2)} грн\n`;
+
+                if (paymentMethod === 'card') {
+                    message += `Спосіб оплати: Карткою.\n(Тут мала б бути інтеграція з платіжним шлюзом)`;
+                    alert(message);
+                    // У реальному проекті тут буде перенаправлення на платіжний шлюз
+                } else if (paymentMethod === 'cash') {
+                    message += `Спосіб оплати: Готівкою при отриманні.\nДякуємо за замовлення!`;
+                    alert(message);
+                    // У реальному проекті тут буде підтвердження замовлення для кур'єра/складу
+                }
+
+                // Очищаємо кошик після "придбання" для демонстрації
+                cart = [];
+                renderProducts(); // Оновлюємо відображення продуктів, щоб кнопки "Додати до кошика" знову стали активними
+            } else {
+                alert('Будь ласка, оберіть спосіб оплати перед придбанням.');
+            }
+        });
+
+        // Ініціалізуємо стан кнопки "Придбати" при завантаженні сторінки
+        updatePurchaseButtonText();
     });
 </script>
 </body>
