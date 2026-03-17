@@ -1,0 +1,202 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"2a535351-bfe7-4078-af4d-9ddb01fba4e9\" name=\"Changes\" comment=\"mycommit\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/PROECT.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/PROECT.html\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/application.properties\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/application.properties\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"PUSH_TAGS\">\r\n      <GitPushTagMode>\r\n        <option name=\"argument\" value=\"--tags\" />\r\n        <option name=\"title\" value=\"All\" />\r\n      </GitPushTagMode>\r\n    </option>\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"main\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Ivan-Vakhula07&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/annak413/java-proj-shop.git&quot;,\r\n    &quot;accountId&quot;: &quot;641cb6b5-757b-4890-bbe2-8cd07601ad2e&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProblemsViewState\">\r\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 6\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2xctUKtXKuIDn9AXfN2do6Fw6ar\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"Application.DemoOnlineShopApplication.executor\": \"Run\",\r\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.git.unshallow\": \"true\",\r\n    \"git-widget-placeholder\": \"last-jod-30-05\",\r\n    \"project.structure.last.edited\": \"Project\",\r\n    \"project.structure.proportion\": \"0.0\",\r\n    \"project.structure.side.proportion\": \"0.0\",\r\n    \"settings.editor.selected.configurable\": \"preferences.sourceCode.Java\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RunManager\">\r\n    <configuration default=\"true\" type=\"JetRunConfigurationType\">\r\n      <module name=\"java-proj-shop\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"KotlinStandaloneScriptRunConfigurationType\">\r\n      <module name=\"java-proj-shop\" />\r\n      <option name=\"filePath\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"2a535351-bfe7-4078-af4d-9ddb01fba4e9\" name=\"Changes\" comment=\"\" />\r\n      <created>1748249203793</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1748249203793</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"mycommit\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1748615390517</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1748615390517</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"2\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"mycommit\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"mycommit\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 1920ac94ed7503591da9f99605f14906ca1f8a2b)
++++ b/.idea/workspace.xml	(date 1751106441799)
+@@ -4,10 +4,73 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="2a535351-bfe7-4078-af4d-9ddb01fba4e9" name="Changes" comment="mycommit">
++    <list default="true" id="a06cff02-0dbb-43e7-9b53-1a7558c5c9a1" name="Changes" comment="">
++      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_30_05_2025_16_13_[Changes]/shelved.patch" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_30_05_2025_16_13__Changes_.xml" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/PROECT.html" beforeDir="false" afterPath="$PROJECT_DIR$/PROECT.html" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/application.properties" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Category.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/CategoryController.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/CategoryService.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Customer.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/CustomerController.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/CustomerDTO.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/CustomerService.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/JpaRepository" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/OnlineShopsApplication.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/PROECT.html" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Product.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/ProductController.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/ProductService.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Purchase.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/PurchaseController.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/PurchaseDTO.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/PurchaseService.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Store.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/StoreController.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/StoreDTO.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/StoreService.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/application.properties" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/categories.html" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/categoryName" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/customers.html" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/data.sql" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/delete" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/pr.html" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/pr.js" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/products.html" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/script.js" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/static" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/DemoOnlineShopApplication.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/controller/CategoryController.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/controller/CustomerController.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/controller/ProductController.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/controller/PurchaseController.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/controller/StoreController.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/model/Category.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/model/Customer.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/model/Product.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/model/Purchase.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/model/Store.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/repository/CategoryRepo.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/repository/CustomerRepo.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/repository/ProductRepo.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/repository/PurchaseRepo.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/repository/StoreRepo.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/service/CategoryService.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/service/CustomerService.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/service/ProductService.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/service/PurchaseService.class" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo_online_shop/service/StoreService.class" beforeDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -15,17 +78,6 @@
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+   </component>
+   <component name="Git.Settings">
+-    <option name="PUSH_TAGS">
+-      <GitPushTagMode>
+-        <option name="argument" value="--tags" />
+-        <option name="title" value="All" />
+-      </GitPushTagMode>
+-    </option>
+-    <option name="RECENT_BRANCH_BY_REPOSITORY">
+-      <map>
+-        <entry key="$PROJECT_DIR$" value="main" />
+-      </map>
+-    </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
+   <component name="GitHubPullRequestSearchHistory">{
+@@ -40,82 +92,31 @@
+     &quot;accountId&quot;: &quot;641cb6b5-757b-4890-bbe2-8cd07601ad2e&quot;
+   }
+ }</component>
+-  <component name="MavenImportPreferences">
+-    <option name="generalSettings">
+-      <MavenGeneralSettings>
+-        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+-      </MavenGeneralSettings>
+-    </option>
+-  </component>
+-  <component name="ProblemsViewState">
+-    <option name="selectedTabId" value="CurrentFile" />
+-  </component>
+   <component name="ProjectColorInfo">{
++  &quot;customColor&quot;: &quot;&quot;,
+   &quot;associatedIndex&quot;: 6
+ }</component>
+-  <component name="ProjectId" id="2xctUKtXKuIDn9AXfN2do6Fw6ar" />
++  <component name="ProjectId" id="2z8IgubVgm30z0zc6JPj42qDUwY" />
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "Application.DemoOnlineShopApplication.executor": "Run",
+-    "ModuleVcsDetector.initialDetectionPerformed": "true",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "RunOnceActivity.git.unshallow": "true",
+-    "git-widget-placeholder": "last-jod-30-05",
+-    "project.structure.last.edited": "Project",
+-    "project.structure.proportion": "0.0",
+-    "project.structure.side.proportion": "0.0",
+-    "settings.editor.selected.configurable": "preferences.sourceCode.Java"
+-  }
+-}]]></component>
+-  <component name="RunManager">
+-    <configuration default="true" type="JetRunConfigurationType">
+-      <module name="java-proj-shop" />
+-      <method v="2">
+-        <option name="Make" enabled="true" />
+-      </method>
+-    </configuration>
+-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+-      <module name="java-proj-shop" />
+-      <option name="filePath" />
+-      <method v="2" />
+-    </configuration>
+-  </component>
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;last-jod-30-05&quot;
++  }
++}</component>
+   <component name="TaskManager">
+     <task active="true" id="Default" summary="Default task">
+-      <changelist id="2a535351-bfe7-4078-af4d-9ddb01fba4e9" name="Changes" comment="" />
+-      <created>1748249203793</created>
++      <changelist id="a06cff02-0dbb-43e7-9b53-1a7558c5c9a1" name="Changes" comment="" />
++      <created>1751106388449</created>
+       <option name="number" value="Default" />
+       <option name="presentableId" value="Default" />
+-      <updated>1748249203793</updated>
++      <updated>1751106388449</updated>
+     </task>
+-    <task id="LOCAL-00001" summary="mycommit">
+-      <option name="closed" value="true" />
+-      <created>1748615390517</created>
+-      <option name="number" value="00001" />
+-      <option name="presentableId" value="LOCAL-00001" />
+-      <option name="project" value="LOCAL" />
+-      <updated>1748615390517</updated>
+-    </task>
+-    <option name="localTasksCounter" value="2" />
+     <servers />
+   </component>
+-  <component name="Vcs.Log.Tabs.Properties">
+-    <option name="TAB_STATES">
+-      <map>
+-        <entry key="MAIN">
+-          <value>
+-            <State />
+-          </value>
+-        </entry>
+-      </map>
+-    </option>
+-  </component>
+-  <component name="VcsManagerConfiguration">
+-    <MESSAGE value="mycommit" />
+-    <option name="LAST_COMMIT_MESSAGE" value="mycommit" />
+-  </component>
+ </project>
+\ No newline at end of file
